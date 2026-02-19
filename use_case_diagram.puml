@@ -1,49 +1,99 @@
 @startuml DiagrammeCasUtilisation
+left to right direction
 
 actor "Utilisateur" as User
 
-rectangle "«système»\nGestionnaire de Tâches" {
+rectangle "«système»  \nGestionnaire de Tâches" {
 
-    package "Gestion des Tâches (CRUD)" #E8F4FD {
-        usecase "Créer une tâche"       as G1
-        usecase "Voir les tâches"       as G2
-        usecase "Modifier une tâche"    as G3
-        usecase "Supprimer une tâche"   as G4
-        usecase "Changer le statut\n(Pending / In Progress /\nCompleted / Abandoned)" as G5
-        usecase "Assigner une priorité\n(Low / Medium / High)" as G6
+    package "1. Opérations CRUD" #E8F4FD{
+        usecase "Créer une tâche"              as UC_Create
+        usecase "Voir la liste des tâches"     as UC_ReadList
+        usecase "Voir les détails d'une tâche" as UC_ReadOne
+        usecase "Modifier une tâche"           as UC_Update
+        usecase "Supprimer une tâche"          as UC_Delete
     }
 
-    package "Fonctionnalités Avancées" #FEF9E7 {
-        usecase "Filtrer les tâches\n(par statut ou priorité)" as F1
-        usecase "Trier les tâches\n(par date ou priorité)"     as F2
-        usecase "Rechercher une tâche\n(par mots-clés)"        as F3
-        usecase "Ajouter un commentaire"                        as F4
-        usecase "Exporter les tâches\n(JSON / XML)"            as F5
-        usecase "Importer les tâches\n(JSON / XML)"            as F6
+    package "2. Statut & Priorité" #f3e8fd{
+        usecase "Marquer 'Completed'"   as UC_Completed
+        usecase "Marquer 'In Progress'" as UC_InProgress
+        usecase "Marquer 'Abandoned'"   as UC_Abandoned
+        usecase "Marquer 'Pending'"     as UC_Pending
+        usecase "Assigner une priorité\n(Low / Medium / High)" as UC_Priority
     }
 
-    usecase "Valider les entrées\n(non vide, longueur max)" as A1
+    package "3. Filtrage" #fde8f6{
+        usecase "Filtrer par statut\n(Completed / In Progress / Abandoned)" as UC_FilterStatus
+        usecase "Filtrer par priorité\n(Low / Medium / High)"                as UC_FilterPriority
+    }
+
+    package "4. Tri" #fde8e8{
+        usecase "Trier par 'dueDate'"  as UC_SortDate
+        usecase "Trier par priorité" as UC_SortPriority
+    }
+
+    package "5. Recherche" #fdfae8{
+        usecase "Rechercher par mots-clés" as UC_Search
+        usecase "Rechercher par nom" as UC_Search_Name
+        usecase "Rechercher par description" as UC_Search_Description
+    }
+
+    package "6. Commentaires" #f4fde8{
+        usecase "Ajouter un commentaire\nà une tâche" as UC_Comment
+    }
+
+    package "7. Persistance" #e8fdf1{
+        usecase "Exporter les tâches" as UC_Export
+        usecase "Exporter les tâches en JSON" as UC_Export_JSON
+        usecase "Exporter les tâches en XML" as UC_Export_XML
+        usecase "Exporter les tâches vers BDD" as UC_Export_BDD
+
+        usecase "Importer les tâches" as UC_Import
+        usecase "Importer les tâches en JSON" as UC_Import_JSON
+        usecase "Importer les tâches en XML" as UC_Import_XML
+        usecase "Importer les tâches vers BDD" as UC_Import_BDD
+    }
+
+    usecase "Valider les entrées" as UC_Validate
 }
 
-User -- G1
-User -- G2
-User -- G3
-User -- G4
-User -- G5
-User -- G6
-User -- F1
-User -- F2
-User -- F3
-User -- F4
-User -- F5
-User -- F6
+User -- UC_Create
+User -- UC_ReadList
+User -- UC_ReadOne
+User -- UC_Update
+User -- UC_Delete
 
-G1  ..> A1 : «include»
-G3  ..> A1 : «include»
+User -- UC_Completed
+User -- UC_InProgress
+User -- UC_Abandoned
+User -- UC_Pending
+User -- UC_Priority
 
-G5   ..> G3  : «extend»
-G6 ..> G3  : «extend»
-F4  ..> G2    : «extend»
+User -- UC_FilterStatus
+User -- UC_FilterPriority
+
+User -- UC_SortDate
+User -- UC_SortPriority
+
+User -- UC_Search
+UC_Search <|-- UC_Search_Name
+UC_Search <|-- UC_Search_Description
+
+User -- UC_Comment
+
+User -- UC_Export
+UC_Export <|-- UC_Export_JSON
+UC_Export <|-- UC_Export_XML
+UC_Export <|-- UC_Export_BDD
+
+User -- UC_Import
+UC_Import <|-- UC_Import_JSON
+UC_Import <|-- UC_Import_XML
+UC_Import <|-- UC_Import_BDD
+
+UC_Create  ..> UC_Validate : «include»
+UC_Update  ..> UC_Validate : «include»
+
+UC_ReadList ..> UC_ReadOne : «include»
 
 
 @enduml

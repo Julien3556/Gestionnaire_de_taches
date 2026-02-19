@@ -13,7 +13,6 @@ enum Priority {
     HIGH
 }
 
-' ===================== INTERFACE TASK =====================
 
 interface Task {
     + getName() : String
@@ -33,7 +32,6 @@ interface Task {
     + isOverdue() : boolean
 }
 
-' ===================== CLASSE CONCRETE TASKIMPL =====================
 
 class TaskImpl {
     - id : UUID
@@ -67,7 +65,6 @@ class TaskImpl {
     + toString() : String
 }
 
-' ===================== CLASSE ABSTRAITE TASKLIST =====================
 
 abstract class TaskList {
     # tasks : List<Task>
@@ -80,7 +77,6 @@ abstract class TaskList {
     + {abstract} getAllTasks() : List<Task>
 }
 
-' ===================== CLASSE CONCRETE TASKLISTIMPL =====================
 
 class TaskListImpl {
     - tasks : List<Task>
@@ -105,7 +101,6 @@ class TaskListImpl {
     + importFromXML(filePath : String) : void
 }
 
-' ===================== VALIDATION =====================
 
 class TaskValidator {
     - {static} MAX_NAME_LENGTH : int = 100
@@ -117,7 +112,6 @@ class TaskValidator {
     + {static} sanitize(input : String) : String
 }
 
-' ===================== COMMENTAIRE =====================
 
 class Comment {
     - id : UUID
@@ -133,7 +127,6 @@ class Comment {
     + toString() : String
 }
 
-' ===================== GUI =====================
 
 class TaskManagerGUI {
     - taskListImpl : TaskListImpl
@@ -153,7 +146,6 @@ class TaskManagerGUI {
     + showStatisticsPanel() : void
 }
 
-' ===================== PERSISTENCE =====================
 
 interface PersistenceManager {
     + exportToJSON(tasks : List<Task>, filePath : String) : void
@@ -169,7 +161,6 @@ class FilePersistenceManager {
     + importFromXML(filePath : String) : List<Task>
 }
 
-' ===================== RELATIONS =====================
 
 Task <|.. TaskImpl : implements
 TaskList <|-- TaskListImpl : extends

@@ -5,45 +5,45 @@ actor "Utilisateur" as User
 rectangle "«système»\nGestionnaire de Tâches" {
 
     package "Gestion des Tâches (CRUD)" #E8F4FD {
-        usecase "Créer une tâche"       as UC_Create
-        usecase "Voir les tâches"       as UC_Read
-        usecase "Modifier une tâche"    as UC_Update
-        usecase "Supprimer une tâche"   as UC_Delete
-        usecase "Changer le statut\n(Pending / In Progress /\nCompleted / Abandoned)" as UC_Status
-        usecase "Assigner une priorité\n(Low / Medium / High)" as UC_Priority
+        usecase "Créer une tâche"       as G1
+        usecase "Voir les tâches"       as G2
+        usecase "Modifier une tâche"    as G3
+        usecase "Supprimer une tâche"   as G4
+        usecase "Changer le statut\n(Pending / In Progress /\nCompleted / Abandoned)" as G5
+        usecase "Assigner une priorité\n(Low / Medium / High)" as G6
     }
 
     package "Fonctionnalités Avancées" #FEF9E7 {
-        usecase "Filtrer les tâches\n(par statut ou priorité)" as UC_Filter
-        usecase "Trier les tâches\n(par date ou priorité)"     as UC_Sort
-        usecase "Rechercher une tâche\n(par mots-clés)"        as UC_Search
-        usecase "Ajouter un commentaire"                        as UC_Comment
-        usecase "Exporter les tâches\n(JSON / XML)"            as UC_Export
-        usecase "Importer les tâches\n(JSON / XML)"            as UC_Import
+        usecase "Filtrer les tâches\n(par statut ou priorité)" as F1
+        usecase "Trier les tâches\n(par date ou priorité)"     as F2
+        usecase "Rechercher une tâche\n(par mots-clés)"        as F3
+        usecase "Ajouter un commentaire"                        as F4
+        usecase "Exporter les tâches\n(JSON / XML)"            as F5
+        usecase "Importer les tâches\n(JSON / XML)"            as F6
     }
 
-    usecase "Valider les entrées\n(non vide, longueur max)" as UC_Validate
+    usecase "Valider les entrées\n(non vide, longueur max)" as A1
 }
 
-User -- UC_Create
-User -- UC_Read
-User -- UC_Update
-User -- UC_Delete
-User -- UC_Status
-User -- UC_Priority
-User -- UC_Filter
-User -- UC_Sort
-User -- UC_Search
-User -- UC_Comment
-User -- UC_Export
-User -- UC_Import
+User -- G1
+User -- G2
+User -- G3
+User -- G4
+User -- G5
+User -- G6
+User -- F1
+User -- F2
+User -- F3
+User -- F4
+User -- F5
+User -- F6
 
-UC_Create  ..> UC_Validate : «include»
-UC_Update  ..> UC_Validate : «include»
+G1  ..> A1 : «include»
+G3  ..> A1 : «include»
 
-UC_Status   ..> UC_Update  : «extend»
-UC_Priority ..> UC_Update  : «extend»
-UC_Comment  ..> UC_Read    : «extend»
+G5   ..> G3  : «extend»
+G6 ..> G3  : «extend»
+F4  ..> G2    : «extend»
 
 
 @enduml

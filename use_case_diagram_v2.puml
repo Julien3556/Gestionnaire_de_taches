@@ -1,11 +1,11 @@
 @startuml DiagrammeCasUtilisation_GestionnaireTaches_Partie1
-
+left to right direction
 
 actor "Utilisateur" as User
 
-rectangle "«système»  Gestionnaire de Tâches — Partie 1" {
+rectangle "«système»  \nGestionnaire de Tâches" {
 
-    package "1. Opérations CRUD" {
+    package "1. Opérations CRUD" #E8F4FD{
         usecase "Créer une tâche"              as UC_Create
         usecase "Voir la liste des tâches"     as UC_ReadList
         usecase "Voir les détails d'une tâche" as UC_ReadOne
@@ -13,33 +13,35 @@ rectangle "«système»  Gestionnaire de Tâches — Partie 1" {
         usecase "Supprimer une tâche"          as UC_Delete
     }
 
-    package "2. Statut & Priorité" {
-        usecase "Marquer Completed"   as UC_Completed
-        usecase "Marquer In Progress" as UC_InProgress
-        usecase "Marquer Abandoned"   as UC_Abandoned
-        usecase "Marquer Pending"     as UC_Pending
+    package "2. Statut & Priorité" #f3e8fd{
+        usecase "Marquer 'Completed'"   as UC_Completed
+        usecase "Marquer 'In Progress'" as UC_InProgress
+        usecase "Marquer 'Abandoned'"   as UC_Abandoned
+        usecase "Marquer 'Pending'"     as UC_Pending
         usecase "Assigner une priorité\n(Low / Medium / High)" as UC_Priority
     }
 
-    package "3. Filtrage" {
+    package "3. Filtrage" #fde8f6{
         usecase "Filtrer par statut\n(Completed / In Progress / Abandoned)" as UC_FilterStatus
         usecase "Filtrer par priorité\n(Low / Medium / High)"                as UC_FilterPriority
     }
 
-    package "4. Tri" {
-        usecase "Trier par dueDate"  as UC_SortDate
+    package "4. Tri" #fde8e8{
+        usecase "Trier par 'dueDate'"  as UC_SortDate
         usecase "Trier par priorité" as UC_SortPriority
     }
 
-    package "5. Recherche" {
-        usecase "Rechercher par mots-clés\n(dans name ou description)" as UC_Search
+    package "5. Recherche" #fdfae8{
+        usecase "Rechercher par mots-clés" as UC_Search
+        usecase "Rechercher par nom" as UC_Search_Name
+        usecase "Rechercher par description" as UC_Search_Description
     }
 
-    package "6. Commentaires" {
+    package "6. Commentaires" #f4fde8{
         usecase "Ajouter un commentaire\nà une tâche" as UC_Comment
     }
 
-    package "7. Persistance" {
+    package "7. Persistance" #e8fdf1{
         usecase "Exporter les tâches\n(JSON / XML)" as UC_Export
         usecase "Importer les tâches\n(JSON / XML)" as UC_Import
     }
@@ -66,6 +68,9 @@ User -- UC_SortDate
 User -- UC_SortPriority
 
 User -- UC_Search
+UC_Search <|-- UC_Search_Name
+UC_Search <|-- UC_Search_Description
+
 User -- UC_Comment
 
 User -- UC_Export

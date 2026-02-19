@@ -42,11 +42,18 @@ rectangle "«système»  \nGestionnaire de Tâches" {
     }
 
     package "7. Persistance" #e8fdf1{
-        usecase "Exporter les tâches\n(JSON / XML)" as UC_Export
-        usecase "Importer les tâches\n(JSON / XML)" as UC_Import
+        usecase "Exporter les tâches" as UC_Export
+        usecase "Exporter les tâches en JSON" as UC_Export_JSON
+        usecase "Exporter les tâches en XML" as UC_Export_XML
+        usecase "Exporter les tâches vers BDD" as UC_Export_BDD
+
+        usecase "Importer les tâches" as UC_Import
+        usecase "Importer les tâches en JSON" as UC_Import_JSON
+        usecase "Importer les tâches en XML" as UC_Import_XML
+        usecase "Importer les tâches vers BDD" as UC_Import_BDD
     }
 
-    usecase "Valider les entrées\n(non vide · longueur max)" as UC_Validate
+    usecase "Valider les entrées" as UC_Validate
 }
 
 User -- UC_Create
@@ -74,7 +81,14 @@ UC_Search <|-- UC_Search_Description
 User -- UC_Comment
 
 User -- UC_Export
+UC_Export <|-- UC_Export_JSON
+UC_Export <|-- UC_Export_XML
+UC_Export <|-- UC_Export_BDD
+
 User -- UC_Import
+UC_Import <|-- UC_Import_JSON
+UC_Import <|-- UC_Import_XML
+UC_Import <|-- UC_Import_BDD
 
 UC_Create  ..> UC_Validate : «include»
 UC_Update  ..> UC_Validate : «include»

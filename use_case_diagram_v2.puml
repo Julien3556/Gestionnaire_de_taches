@@ -1,0 +1,80 @@
+@startuml DiagrammeCasUtilisation_GestionnaireTaches_Partie1
+
+
+actor "Utilisateur" as User
+
+rectangle "«système»  Gestionnaire de Tâches — Partie 1" {
+
+    package "1. Opérations CRUD" {
+        usecase "Créer une tâche"              as UC_Create
+        usecase "Voir la liste des tâches"     as UC_ReadList
+        usecase "Voir les détails d'une tâche" as UC_ReadOne
+        usecase "Modifier une tâche"           as UC_Update
+        usecase "Supprimer une tâche"          as UC_Delete
+    }
+
+    package "2. Statut & Priorité" {
+        usecase "Marquer Completed"   as UC_Completed
+        usecase "Marquer In Progress" as UC_InProgress
+        usecase "Marquer Abandoned"   as UC_Abandoned
+        usecase "Marquer Pending"     as UC_Pending
+        usecase "Assigner une priorité\n(Low / Medium / High)" as UC_Priority
+    }
+
+    package "3. Filtrage" {
+        usecase "Filtrer par statut\n(Completed / In Progress / Abandoned)" as UC_FilterStatus
+        usecase "Filtrer par priorité\n(Low / Medium / High)"                as UC_FilterPriority
+    }
+
+    package "4. Tri" {
+        usecase "Trier par dueDate"  as UC_SortDate
+        usecase "Trier par priorité" as UC_SortPriority
+    }
+
+    package "5. Recherche" {
+        usecase "Rechercher par mots-clés\n(dans name ou description)" as UC_Search
+    }
+
+    package "6. Commentaires" {
+        usecase "Ajouter un commentaire\nà une tâche" as UC_Comment
+    }
+
+    package "7. Persistance" {
+        usecase "Exporter les tâches\n(JSON / XML)" as UC_Export
+        usecase "Importer les tâches\n(JSON / XML)" as UC_Import
+    }
+
+    usecase "Valider les entrées\n(non vide · longueur max)" as UC_Validate
+}
+
+User -- UC_Create
+User -- UC_ReadList
+User -- UC_ReadOne
+User -- UC_Update
+User -- UC_Delete
+
+User -- UC_Completed
+User -- UC_InProgress
+User -- UC_Abandoned
+User -- UC_Pending
+User -- UC_Priority
+
+User -- UC_FilterStatus
+User -- UC_FilterPriority
+
+User -- UC_SortDate
+User -- UC_SortPriority
+
+User -- UC_Search
+User -- UC_Comment
+
+User -- UC_Export
+User -- UC_Import
+
+UC_Create  ..> UC_Validate : «include»
+UC_Update  ..> UC_Validate : «include»
+
+UC_ReadList ..> UC_ReadOne : «include»
+
+
+@enduml

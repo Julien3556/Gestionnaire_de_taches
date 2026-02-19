@@ -1,0 +1,49 @@
+@startuml DiagrammeCasUtilisation
+
+actor "Utilisateur" as User
+
+rectangle "«système»\nGestionnaire de Tâches" {
+
+    package "Gestion des Tâches (CRUD)" #E8F4FD {
+        usecase "Créer une tâche"       as UC_Create
+        usecase "Voir les tâches"       as UC_Read
+        usecase "Modifier une tâche"    as UC_Update
+        usecase "Supprimer une tâche"   as UC_Delete
+        usecase "Changer le statut\n(Pending / In Progress /\nCompleted / Abandoned)" as UC_Status
+        usecase "Assigner une priorité\n(Low / Medium / High)" as UC_Priority
+    }
+
+    package "Fonctionnalités Avancées" #FEF9E7 {
+        usecase "Filtrer les tâches\n(par statut ou priorité)" as UC_Filter
+        usecase "Trier les tâches\n(par date ou priorité)"     as UC_Sort
+        usecase "Rechercher une tâche\n(par mots-clés)"        as UC_Search
+        usecase "Ajouter un commentaire"                        as UC_Comment
+        usecase "Exporter les tâches\n(JSON / XML)"            as UC_Export
+        usecase "Importer les tâches\n(JSON / XML)"            as UC_Import
+    }
+
+    usecase "Valider les entrées\n(non vide, longueur max)" as UC_Validate
+}
+
+User -- UC_Create
+User -- UC_Read
+User -- UC_Update
+User -- UC_Delete
+User -- UC_Status
+User -- UC_Priority
+User -- UC_Filter
+User -- UC_Sort
+User -- UC_Search
+User -- UC_Comment
+User -- UC_Export
+User -- UC_Import
+
+UC_Create  ..> UC_Validate : «include»
+UC_Update  ..> UC_Validate : «include»
+
+UC_Status   ..> UC_Update  : «extend»
+UC_Priority ..> UC_Update  : «extend»
+UC_Comment  ..> UC_Read    : «extend»
+
+
+@enduml

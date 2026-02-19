@@ -1,12 +1,9 @@
-@startuml DiagrammeCasUtilisation_GestionnaireTaches
+@startuml DiagrammeCasUtilisation
 
-' ── Acteur ────────────────────────────────────────────────────────────────────
 actor "Utilisateur" as User
 
-' ── Frontière système ─────────────────────────────────────────────────────────
 rectangle "«système»\nGestionnaire de Tâches" {
 
-    ' ── CRUD & Statuts ───────────────────────────────────────────────────────
     package "Gestion des Tâches (CRUD)" #E8F4FD {
         usecase "Créer une tâche"       as UC_Create
         usecase "Voir les tâches"       as UC_Read
@@ -16,7 +13,6 @@ rectangle "«système»\nGestionnaire de Tâches" {
         usecase "Assigner une priorité\n(Low / Medium / High)" as UC_Priority
     }
 
-    ' ── Fonctionnalités avancées ─────────────────────────────────────────────
     package "Fonctionnalités Avancées" #FEF9E7 {
         usecase "Filtrer les tâches\n(par statut ou priorité)" as UC_Filter
         usecase "Trier les tâches\n(par date ou priorité)"     as UC_Sort
@@ -26,51 +22,28 @@ rectangle "«système»\nGestionnaire de Tâches" {
         usecase "Importer les tâches\n(JSON / XML)"            as UC_Import
     }
 
-    ' ── Validation (cas inclus) ───────────────────────────────────────────────
     usecase "Valider les entrées\n(non vide, longueur max)" as UC_Validate
 }
 
-' ── Relations Utilisateur → Cas d'utilisation ─────────────────────────────────
-User --> UC_Create
-User --> UC_Read
-User --> UC_Update
-User --> UC_Delete
-User --> UC_Status
-User --> UC_Priority
-User --> UC_Filter
-User --> UC_Sort
-User --> UC_Search
-User --> UC_Comment
-User --> UC_Export
-User --> UC_Import
+User -- UC_Create
+User -- UC_Read
+User -- UC_Update
+User -- UC_Delete
+User -- UC_Status
+User -- UC_Priority
+User -- UC_Filter
+User -- UC_Sort
+User -- UC_Search
+User -- UC_Comment
+User -- UC_Export
+User -- UC_Import
 
-' ── Relations «include» ───────────────────────────────────────────────────────
 UC_Create  ..> UC_Validate : «include»
 UC_Update  ..> UC_Validate : «include»
 
-' ── Relations «extend» ───────────────────────────────────────────────────────
 UC_Status   ..> UC_Update  : «extend»
 UC_Priority ..> UC_Update  : «extend»
 UC_Comment  ..> UC_Read    : «extend»
 
-' ── Note explicative ─────────────────────────────────────────────────────────
-note bottom of UC_Validate
-  Règles de validation :
-  • name       : non vide, ≤ 100 caractères
-  • description: non vide, ≤ 500 caractères
-  • dueDate    : obligatoire, ≥ aujourd'hui
-  • priority   : obligatoire (enum)
-  • comment    : non vide, ≤ 300 caractères
-end note
-
-note right of UC_Filter
-  Filtre combinable :
-  statut ET/OU priorité
-end note
-
-note right of UC_Export
-  Persistance :
-  fichier JSON ou XML
-end note
 
 @enduml

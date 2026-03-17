@@ -1,188 +1,180 @@
-@startuml DiagrammeDeClasses_GestionnaireTaches
+@startuml ClassDiagram_TaskManager_Partie1
 
-enum Status {
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FAFAFA
+skinparam classBorderColor #666666
+skinparam arrowColor #444444
+skinparam arrowThickness 1.2
+skinparam linetype ortho
+
+' ===================== ENUMERATIONS =====================
+
+enum TaskStatus <<enumeration>> #C0DD97 {
     PENDING
     IN_PROGRESS
     COMPLETED
     ABANDONED
 }
 
-enum Priority {
+enum Priority <<enumeration>> #C0DD97 {
     LOW
     MEDIUM
     HIGH
 }
 
-' ===================== INTERFACE TASK =====================
+' ===================== INTERFACE Task =====================
 
-interface Task {
-    + getName() : String
-    + getDescription() : String
-    + getDueDate() : LocalDate
-    + getStatus() : Status
-    + getPriority() : Priority
-    + setName(name : String) : void
-    + setDescription(description : String) : void
-    + setDueDate(dueDate : LocalDate) : void
+interface Task <<interface>> #CECBF6 {
+    + editName(name : String) : void
+    + editDescription(desc : String) : void
+    + editDueDate(date : Date) : void
     + markCompleted() : void
     + markInProgress() : void
     + markAbandoned() : void
     + markPending() : void
-    + addComment(comment : Comment) : void
+    + getStatus() : TaskStatus
+    + setPriority(p : Priority) : void
+    + getPriority() : Priority
+    + addComment(content : String) : void
     + getComments() : List<Comment>
-    + isOverdue() : boolean
-}
-
-' ===================== CLASSE CONCRETE TASKIMPL =====================
-
-class TaskImpl {
-    - id : UUID
-    - name : String
-    - description : String
-    - dueDate : LocalDate
-    - status : Status
-    - priority : Priority
-    - createdAt : LocalDateTime
-    - comments : List<Comment>
-    --
-    + TaskImpl(name : String, description : String, dueDate : LocalDate, priority : Priority)
     + getId() : UUID
     + getName() : String
     + getDescription() : String
-    + getDueDate() : LocalDate
-    + getStatus() : Status
-    + getPriority() : Priority
-    + getCreatedAt() : LocalDateTime
-    + setName(name : String) : void
-    + setDescription(description : String) : void
-    + setDueDate(dueDate : LocalDate) : void
-    + setPriority(priority : Priority) : void
+    + getDueDate() : Date
+}
+
+' ===================== CLASSE CONCRETE TaskImpl =====================
+
+class TaskImpl #B5D4F4 {
+    - id : UUID
+    - name : String
+    - description : String
+    - dueDate : Date
+    - status : TaskStatus
+    - priority : Priority
+    - comments : List<Comment>
+    --
+    + TaskImpl(name : String, description : String, dueDate : Date)
+    + editName(name : String) : void
+    + editDescription(desc : String) : void
+    + editDueDate(date : Date) : void
     + markCompleted() : void
     + markInProgress() : void
     + markAbandoned() : void
     + markPending() : void
-    + addComment(comment : Comment) : void
+    + getStatus() : TaskStatus
+    + setPriority(p : Priority) : void
+    + getPriority() : Priority
+    + addComment(content : String) : void
     + getComments() : List<Comment>
-    + isOverdue() : boolean
-    + toString() : String
+    + getId() : UUID
+    + getName() : String
+    + getDescription() : String
+    + getDueDate() : Date
 }
 
-' ===================== CLASSE ABSTRAITE TASKLIST =====================
+' ===================== CLASSE Comment =====================
 
-abstract class TaskList {
+class Comment #FAC775 {
+    - id : UUID
+    - content : String
+    - createdAt : Date
+    --
+    + Comment(content : String)
+    + getContent() : String
+    + getCreatedAt() : Date
+    + getId() : UUID
+}
+
+' ===================== CLASSE InputValidator =====================
+
+class InputValidator #FAC775 {
+    - {static} MAX_NAME_LEN : int = 100
+    - {static} MAX_DESC_LEN : int = 500
+    --
+    + validateName(name : String) : String
+    + validateDescription(desc : String) : String
+    + validateDueDate(date : Date) : Date
+}
+
+' ===================== CLASSE ABSTRAITE TaskList =====================
+
+abstract class TaskList #F4C0D1 {
     # tasks : List<Task>
     --
-    + {abstract} addTask(task : Task) : void
-    + {abstract} removeTask(taskId : UUID) : boolean
-    + {abstract} updateTask(taskId : UUID, updatedTask : Task) : boolean
-    + {abstract} displayTasks() : void
-    + {abstract} getTaskById(taskId : UUID) : Task
-    + {abstract} getAllTasks() : List<Task>
+    + {abstract} add(t : Task) : void
+    + {abstract} remove(id : UUID) : void
+    + {abstract} update(t : Task) : void
+    + {abstract} display() : void
+    + {abstract} getAll() : List<Task>
+    + {abstract} findById(id : UUID) : Task
+    + {abstract} search(keyword : String) : List<Task>
 }
 
-' ===================== CLASSE CONCRETE TASKLISTIMPL =====================
+' ===================== CLASSE CONCRETE TaskListImpl =====================
 
-class TaskListImpl {
-    - tasks : List<Task>
+class TaskListImpl #F7C1C1 {
+    - tasks : ArrayList<Task>
+    - validator : InputValidator
     --
     + TaskListImpl()
-    + addTask(task : Task) : void
-    + removeTask(taskId : UUID) : boolean
-    + updateTask(taskId : UUID, updatedTask : Task) : boolean
-    + displayTasks() : void
-    + getTaskById(taskId : UUID) : Task
-    + getAllTasks() : List<Task>
-    + filterByStatus(status : Status) : List<Task>
-    + filterByPriority(priority : Priority) : List<Task>
-    + sortByDueDate() : List<Task>
-    + sortByPriority() : List<Task>
+    + add(t : Task) : void
+    + remove(id : UUID) : void
+    + update(t : Task) : void
+    + display() : void
+    + getAll() : List<Task>
+    + findById(id : UUID) : Task
     + search(keyword : String) : List<Task>
-    + searchByName(keyword : String) : List<Task>
-    + searchByDescription(keyword : String) : List<Task>
+    + filterByStatus(status : TaskStatus) : List<Task>
+    + filterByPriority(priority : Priority) : List<Task>
+    + sortByDueDate() : void
+    + sortByPriority() : void
     + exportToJSON(filePath : String) : void
     + exportToXML(filePath : String) : void
     + importFromJSON(filePath : String) : void
     + importFromXML(filePath : String) : void
 }
 
-' ===================== VALIDATION =====================
+' ===================== CLASSE TaskManagerGUI (View) =====================
 
-class TaskValidator {
-    - {static} MAX_NAME_LENGTH : int = 100
-    - {static} MAX_DESC_LENGTH : int = 500
-    --
-    + {static} validateName(name : String) : String
-    + {static} validateDescription(description : String) : String
-    + {static} validateDueDate(dueDate : LocalDate) : LocalDate
-    + {static} sanitize(input : String) : String
-}
-
-' ===================== COMMENTAIRE =====================
-
-class Comment {
-    - id : UUID
-    - content : String
-    - author : String
-    - createdAt : LocalDateTime
-    --
-    + Comment(content : String, author : String)
-    + getId() : UUID
-    + getContent() : String
-    + getAuthor() : String
-    + getCreatedAt() : LocalDateTime
-    + toString() : String
-}
-
-' ===================== GUI =====================
-
-class TaskManagerGUI {
-    - taskListImpl : TaskListImpl
+class TaskManagerGUI #9FE1CB {
+    - taskList : TaskListImpl
     - mainFrame : JFrame
     - taskTable : JTable
-    - tableModel : DefaultTableModel
     --
-    + TaskManagerGUI(taskListImpl : TaskListImpl)
-    + initialize() : void
-    + refreshTaskList() : void
-    + showCreateTaskDialog() : void
-    + showEditTaskDialog(taskId : UUID) : void
-    + showTaskDetails(taskId : UUID) : void
-    + confirmDeleteTask(taskId : UUID) : void
-    + showFilterPanel() : void
-    + showSearchPanel() : void
-    + showStatisticsPanel() : void
-}
-
-' ===================== PERSISTENCE =====================
-
-interface PersistenceManager {
-    + exportToJSON(tasks : List<Task>, filePath : String) : void
-    + exportToXML(tasks : List<Task>, filePath : String) : void
-    + importFromJSON(filePath : String) : List<Task>
-    + importFromXML(filePath : String) : List<Task>
-}
-
-class FilePersistenceManager {
-    + exportToJSON(tasks : List<Task>, filePath : String) : void
-    + exportToXML(tasks : List<Task>, filePath : String) : void
-    + importFromJSON(filePath : String) : List<Task>
-    + importFromXML(filePath : String) : List<Task>
+    + TaskManagerGUI(taskList : TaskListImpl)
+    + refreshView() : void
+    + showCreateDialog() : void
+    + showEditDialog(t : Task) : void
+    + showDeleteConfirm(id : UUID) : void
+    + applyFilter(status : TaskStatus) : void
+    + applySort(criterion : String) : void
+    + showSearchResults(keyword : String) : void
 }
 
 ' ===================== RELATIONS =====================
 
-Task <|.. TaskImpl : implements
-TaskList <|-- TaskListImpl : extends
-TaskList o-- Task : "      contient"
+' TaskImpl implémente Task
+Task <|.. TaskImpl
 
-TaskImpl "1" *-- "0..*" Comment : contains
-TaskImpl ..> Status : uses
-TaskImpl ..> Priority : uses
+' TaskListImpl hérite de TaskList
+TaskList <|-- TaskListImpl
 
-TaskListImpl ..> TaskValidator : uses
-TaskListImpl ..> PersistenceManager : uses
-PersistenceManager <|.. FilePersistenceManager : implements
+' TaskImpl utilise TaskStatus et Priority (dépendances)
+TaskImpl ..> TaskStatus : uses
+TaskImpl ..> Priority  : uses
 
-TaskManagerGUI --> TaskListImpl : delegates to
+' TaskImpl contient des Comment (composition)
+TaskImpl "1" *-- "0..*" Comment : contains >
+
+' TaskListImpl gère des Task (agrégation)
+TaskListImpl "1" o-- "0..*" Task : manages >
+
+' TaskListImpl utilise InputValidator (dépendance)
+TaskListImpl ..> InputValidator : uses >
+
+' TaskManagerGUI délègue à TaskListImpl (dépendance)
+TaskManagerGUI ..> TaskListImpl : delegates >
 
 @enduml

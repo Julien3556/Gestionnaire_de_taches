@@ -1,0 +1,107 @@
+@startuml DiagrammeSequencePartie1
+title Diagramme de Séquence — Partie 1 : Création et Ajout d'une Tâche
+
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam backgroundColor #FAFAFA
+skinparam ParticipantBackgroundColor #E8F4FD
+skinparam ParticipantBorderColor #2980B9
+skinparam LifeLineBorderColor #2980B9
+skinparam ArrowColor #2C3E50
+skinparam ActivationBarBorderColor #2980B9
+skinparam ActivationBarBackgroundColor #D6EAF8
+skinparam NoteBackgroundColor #FFFDE7
+skinparam NoteBorderColor #F0C040
+
+actor "Utilisateur" as User
+
+participant "TaskManagerGUI\n(View)" as GUI
+participant "TaskListImpl\n(Controller / Model)" as TLI
+participant "TaskValidator\n(Validation)" as VAL
+participant "TaskImpl\n(Model)" as TASK
+
+== 1. Saisie des données par l'utilisateur ==
+
+User -> GUI : Ouvre le formulaire de création
+activate GUI
+
+GUI --> User : Affiche le formulaire\n(name, description, dueDate, priority, status)
+
+User -> GUI : Remplit et soumet le formulaire\n(name, description, dueDate, priority)
+note right of User
+  Champs saisis :
+  • name       : "Préparer rapport"
+  • description: "Rapport MOA S4"
+  • dueDate    : 2025-04-01
+  • priority   : HIGH
+  • status     : IN_PROGRESS (défaut)
+end note
+
+== 2. Validation des entrées (avant création) ==
+
+GUI -> TLI : addTask(name, description, dueDate, priority)
+activate TLI
+
+TLI -> VAL : validate(name, description, dueDate, priority)
+activate VAL
+
+alt Champ name vide ou null
+    VAL --> TLI : ValidationException("Le nom ne peut pas être vide")
+    TLI --> GUI : Erreur de validation
+    GUI --> User : Affiche message d'erreur\n"Le nom est obligatoire"
+else Champ name trop long (> 100 car.)
+    VAL --> TLI : ValidationException("Nom trop long (max 100 caractères)")
+    TLI --> GUI : Erreur de validation
+    GUI --> User : Affiche message d'erreur\n"Nom trop long"
+else Champ description vide ou null
+    VAL --> TLI : ValidationException("La description ne peut pas être vide")
+    TLI --> GUI : Erreur de validation
+    GUI --> User : Affiche message d'erreur\n"Description obligatoire"
+else Toutes les entrées sont valides
+    VAL --> TLI : true (validation OK)
+    deactivate VAL
+    note over TLI : Les entrées sont valides,\non procède à la création
+end
+
+== 3. Création de l'objet TaskImpl ==
+
+TLI -> TASK : new TaskImpl(name, description, dueDate, priority)
+activate TASK
+
+TASK -> TASK : setName(name)
+TASK -> TASK : setDescription(description)
+TASK -> TASK : setDueDate(dueDate)
+TASK -> TASK : setPriority(priority)
+TASK -> TASK : setStatus(IN_PROGRESS)
+note right of TASK
+  Status par défaut = IN_PROGRESS
+  (implémentation de l'interface Task)
+end note
+
+TASK --> TLI : taskImpl (objet créé)
+deactivate TASK
+
+== 4. Ajout de la tâche à la liste ==
+
+TLI -> TLI : taskList.add(taskImpl)
+note right of TLI
+  TaskListImpl maintient une
+  ArrayList<Task> en interne.
+  Méthode abstraite add()
+  définie dans TaskList.
+end note
+
+TLI --> GUI : Succès — tâche ajoutée
+deactivate TLI
+
+== 5. Mise à jour de l'interface graphique ==
+
+GUI -> TLI : displayTasks()
+activate TLI
+TLI --> GUI : Liste mise à jour [Task, ...]
+deactivate TLI
+
+GUI --> User : Affiche la liste des tâches\n(avec la nouvelle tâche visible)
+deactivate GUI
+
+@enduml

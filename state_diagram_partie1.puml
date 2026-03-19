@@ -1,0 +1,55 @@
+@startuml DiagrammeEtatTransitionPartie1
+
+[*] --> Validation : soumission du formulaire\n(name, description, dueDate, priority)
+
+state "Validation" as Validation {
+    state "Vérifier champs non vides" as V1
+    state "Vérifier longueur\n(name ≤ 100, desc ≤ 500)" as V2
+    state "Vérifier dueDate définie" as V3
+    state "Vérifier priority\n(LOW | MEDIUM | HIGH)" as V4
+    V1 --> V2
+    V2 --> V3
+    V3 --> V4
+}
+
+state "Pending" as Pending
+state "In Progress" as InProgress
+
+state "En édition" as Editing {
+    state "Modifier name, description" as E1
+    state "Modifier dueDate, priority" as E2
+    state "Ajouter un commentaire" as E3
+    E1 --> E2
+    E2 --> E3
+}
+
+state "Completed" as Completed 
+
+state "Abandoned" as Abandoned 
+
+Validation --> Pending     : [entrées valides] / créer TaskImpl\net ajouter à TaskListImpl
+Validation --> [*]         : [entrées invalides] / afficher erreur\net retourner au formulaire
+
+Pending    --> InProgress  : markInProgress()
+Pending    --> Abandoned   : markAbandoned()
+Pending    --> Completed   : markCompleted()
+Pending    --> Editing     : editTask()
+Pending    --> Pending     : assignPriority(LOW | MEDIUM | HIGH)
+
+InProgress --> Completed   : markCompleted()
+InProgress --> Abandoned   : markAbandoned()
+InProgress --> Pending     : markPending()
+InProgress --> Editing     : editTask()
+InProgress --> InProgress  : assignPriority(LOW | MEDIUM | HIGH)
+
+Editing    --> Pending     : saveTask() [état précédent = Pending]
+Editing    --> InProgress  : saveTask() [état précédent = In Progress]
+
+Completed  --> InProgress  : markInProgress() [réouverture]
+Completed  --> [*]         : deleteTask()
+
+Abandoned  --> InProgress  : markInProgress() [réactivation]
+Abandoned  --> Pending     : markPending() [remise en attente]
+Abandoned  --> [*]         : deleteTask()
+
+@enduml

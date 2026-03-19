@@ -1,15 +1,5 @@
 @startuml ClassDiagram_TaskManager_Partie1
 
-skinparam classAttributeIconSize 0
-skinparam classFontStyle bold
-skinparam classBackgroundColor #FAFAFA
-skinparam classBorderColor #666666
-skinparam arrowColor #444444
-skinparam arrowThickness 1.2
-skinparam linetype ortho
-
-' ===================== ENUMERATIONS =====================
-
 enum TaskStatus <<enumeration>> #C0DD97 {
     PENDING
     IN_PROGRESS
@@ -22,8 +12,6 @@ enum Priority <<enumeration>> #C0DD97 {
     MEDIUM
     HIGH
 }
-
-' ===================== INTERFACE Task =====================
 
 interface Task <<interface>> #CECBF6 {
     + editName(name : String) : void
@@ -43,8 +31,6 @@ interface Task <<interface>> #CECBF6 {
     + getDescription() : String
     + getDueDate() : Date
 }
-
-' ===================== CLASSE CONCRETE TaskImpl =====================
 
 class TaskImpl #B5D4F4 {
     - id : UUID
@@ -73,8 +59,6 @@ class TaskImpl #B5D4F4 {
     + getDueDate() : Date
 }
 
-' ===================== CLASSE Comment =====================
-
 class Comment #FAC775 {
     - id : UUID
     - content : String
@@ -86,8 +70,6 @@ class Comment #FAC775 {
     + getId() : UUID
 }
 
-' ===================== CLASSE InputValidator =====================
-
 class InputValidator #FAC775 {
     - {static} MAX_NAME_LEN : int = 100
     - {static} MAX_DESC_LEN : int = 500
@@ -96,8 +78,6 @@ class InputValidator #FAC775 {
     + validateDescription(desc : String) : String
     + validateDueDate(date : Date) : Date
 }
-
-' ===================== CLASSE ABSTRAITE TaskList =====================
 
 abstract class TaskList #F4C0D1 {
     --
@@ -109,8 +89,6 @@ abstract class TaskList #F4C0D1 {
     + {abstract} findById(id : UUID) : Task
     + {abstract} search(keyword : String) : void
 }
-
-' ===================== CLASSE CONCRETE TaskListImpl =====================
 
 class TaskListImpl #F7C1C1 {
     - validator : InputValidator
@@ -133,8 +111,6 @@ class TaskListImpl #F7C1C1 {
     + importFromXML(filePath : String) : void
 }
 
-' ===================== CLASSE TaskManagerGUI (View) =====================
-
 class TaskManagerGUI #9FE1CB {
     - mainFrame : JFrame
     - taskTable : JTable
@@ -149,31 +125,22 @@ class TaskManagerGUI #9FE1CB {
     + showSearchResults(keyword : String) : void
 }
 
-' ===================== RELATIONS =====================
 
-' TaskImpl implémente Task
 Task <|.. TaskImpl
 
-' TaskListImpl hérite de TaskList
 TaskList <|-- TaskListImpl
 
-' TaskImpl utilise TaskStatus et Priority (dépendances)
 TaskImpl ..> TaskStatus : uses
 TaskImpl ..> Priority  : uses
 
-' TaskImpl contient des Comment (composition)
-TaskImpl "1" *-- "0..*" Comment : contains >
+TaskImpl "1" *-- "0..*" Comment : contains 
 
-' TaskList agrège des Task (agrégation — remplace tasks: List<Task>)
-TaskList "1" o-- "0..*" Task : manages >
+TaskList "1" o-- "0..*" Task : manages 
 
-' TaskListImpl agrège des Task (remplace tasks: ArrayList<Task>)
-TaskListImpl "1" o-- "0..*" Task : manages >
+TaskListImpl "1" o-- "0..*" Task : manages 
 
-' TaskListImpl utilise InputValidator (dépendance)
-TaskListImpl ..> InputValidator : uses >
+TaskListImpl ..> InputValidator : uses 
 
-' TaskManagerGUI délègue à TaskListImpl (dépendance)
-TaskManagerGUI ..> TaskListImpl : delegates >
+TaskManagerGUI ..> TaskListImpl : delegates 
 
 @enduml

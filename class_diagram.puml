@@ -37,7 +37,7 @@ interface Task <<interface>> #CECBF6 {
     + setPriority(p : Priority) : void
     + getPriority() : Priority
     + addComment(content : String) : void
-    + getComments() : List<Comment>
+    + getComments() : void
     + getId() : UUID
     + getName() : String
     + getDescription() : String
@@ -53,7 +53,6 @@ class TaskImpl #B5D4F4 {
     - dueDate : Date
     - status : TaskStatus
     - priority : Priority
-    - comments : List<Comment>
     --
     + TaskImpl(name : String, description : String, dueDate : Date)
     + editName(name : String) : void
@@ -67,7 +66,7 @@ class TaskImpl #B5D4F4 {
     + setPriority(p : Priority) : void
     + getPriority() : Priority
     + addComment(content : String) : void
-    + getComments() : List<Comment>
+    + getComments() : void
     + getId() : UUID
     + getName() : String
     + getDescription() : String
@@ -101,21 +100,19 @@ class InputValidator #FAC775 {
 ' ===================== CLASSE ABSTRAITE TaskList =====================
 
 abstract class TaskList #F4C0D1 {
-    # tasks : List<Task>
     --
     + {abstract} add(t : Task) : void
     + {abstract} remove(id : UUID) : void
     + {abstract} update(t : Task) : void
     + {abstract} display() : void
-    + {abstract} getAll() : List<Task>
+    + {abstract} getAll() : void
     + {abstract} findById(id : UUID) : Task
-    + {abstract} search(keyword : String) : List<Task>
+    + {abstract} search(keyword : String) : void
 }
 
 ' ===================== CLASSE CONCRETE TaskListImpl =====================
 
 class TaskListImpl #F7C1C1 {
-    - tasks : ArrayList<Task>
     - validator : InputValidator
     --
     + TaskListImpl()
@@ -123,11 +120,11 @@ class TaskListImpl #F7C1C1 {
     + remove(id : UUID) : void
     + update(t : Task) : void
     + display() : void
-    + getAll() : List<Task>
+    + getAll() : void
     + findById(id : UUID) : Task
-    + search(keyword : String) : List<Task>
-    + filterByStatus(status : TaskStatus) : List<Task>
-    + filterByPriority(priority : Priority) : List<Task>
+    + search(keyword : String) : void
+    + filterByStatus(status : TaskStatus) : void
+    + filterByPriority(priority : Priority) : void
     + sortByDueDate() : void
     + sortByPriority() : void
     + exportToJSON(filePath : String) : void
@@ -139,7 +136,6 @@ class TaskListImpl #F7C1C1 {
 ' ===================== CLASSE TaskManagerGUI (View) =====================
 
 class TaskManagerGUI #9FE1CB {
-    - taskList : TaskListImpl
     - mainFrame : JFrame
     - taskTable : JTable
     --
@@ -168,7 +164,10 @@ TaskImpl ..> Priority  : uses
 ' TaskImpl contient des Comment (composition)
 TaskImpl "1" *-- "0..*" Comment : contains >
 
-' TaskListImpl gère des Task (agrégation)
+' TaskList agrège des Task (agrégation — remplace tasks: List<Task>)
+TaskList "1" o-- "0..*" Task : manages >
+
+' TaskListImpl agrège des Task (remplace tasks: ArrayList<Task>)
 TaskListImpl "1" o-- "0..*" Task : manages >
 
 ' TaskListImpl utilise InputValidator (dépendance)

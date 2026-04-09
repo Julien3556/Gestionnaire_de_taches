@@ -1,6 +1,6 @@
 @startuml DiagrammeCasUtilisation
 left to right direction
-
+' Acteurs '
 actor "Utilisateur" as User
 
 rectangle "«système»  \nGestionnaire de Tâches" {
@@ -56,6 +56,7 @@ rectangle "«système»  \nGestionnaire de Tâches" {
     usecase "Valider les entrées" as UC_Validate
 }
 
+'  relations '
 User -- UC_Create
 User -- UC_ReadList
 User -- UC_ReadOne

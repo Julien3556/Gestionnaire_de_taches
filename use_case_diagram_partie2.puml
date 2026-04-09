@@ -1,4 +1,4 @@
-@startuml DiagrammeCasUtilisationPartie2_Clean
+@startuml DiagrammeCasUtilisationPartie2
 
 left to right direction
 skinparam linetype ortho

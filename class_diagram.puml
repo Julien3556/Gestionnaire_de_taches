@@ -1,14 +1,4 @@
-@startuml ClassDiagram_TaskManager_Partie1
-
-skinparam classAttributeIconSize 0
-skinparam classFontStyle bold
-skinparam classBackgroundColor #FAFAFA
-skinparam classBorderColor #666666
-skinparam arrowColor #444444
-skinparam arrowThickness 1.2
-skinparam linetype ortho
-
-' ===================== ENUMERATIONS =====================
+@startuml ClassDiagram_Partie1
 
 enum TaskStatus <<enumeration>> #C0DD97 {
     PENDING
@@ -23,9 +13,8 @@ enum Priority <<enumeration>> #C0DD97 {
     HIGH
 }
 
-' ===================== INTERFACE Task =====================
-
 interface Task <<interface>> #CECBF6 {
+    __Methodes__
     + editName(name : String) : void
     + editDescription(desc : String) : void
     + editDueDate(date : Date) : void
@@ -44,17 +33,17 @@ interface Task <<interface>> #CECBF6 {
     + getDueDate() : Date
 }
 
-' ===================== CLASSE CONCRETE TaskImpl =====================
-
 class TaskImpl #B5D4F4 {
+    __Attributs__
     - id : UUID
     - name : String
     - description : String
     - dueDate : Date
     - status : TaskStatus
     - priority : Priority
-    --
+    __Constructeur__
     + TaskImpl(name : String, description : String, dueDate : Date)
+    __Methodes__
     + editName(name : String) : void
     + editDescription(desc : String) : void
     + editDueDate(date : Date) : void
@@ -73,56 +62,45 @@ class TaskImpl #B5D4F4 {
     + getDueDate() : Date
 }
 
-' ===================== CLASSE Comment =====================
-
-class Comment #FAC775 {
+class Comment #B5D4F4 {
+    __Attributs__
     - id : UUID
     - content : String
     - createdAt : Date
-    --
+    __Constructeur__
     + Comment(content : String)
+    __Methodes__
     + getContent() : String
     + getCreatedAt() : Date
     + getId() : UUID
 }
 
-' ===================== CLASSE InputValidator =====================
-
-class InputValidator #FAC775 {
+class InputValidator #B5D4F4 {
+    __Attributs__
     - {static} MAX_NAME_LEN : int = 100
     - {static} MAX_DESC_LEN : int = 500
-    --
+    __Methodes__
     + validateName(name : String) : String
     + validateDescription(desc : String) : String
     + validateDueDate(date : Date) : Date
 }
 
-' ===================== CLASSE ABSTRAITE TaskList =====================
-
 abstract class TaskList #F4C0D1 {
-    --
+    __Methodes__
     + {abstract} add(t : Task) : void
     + {abstract} remove(id : UUID) : void
     + {abstract} update(t : Task) : void
-    + {abstract} display() : void
     + {abstract} getAll() : void
     + {abstract} findById(id : UUID) : Task
     + {abstract} search(keyword : String) : void
 }
 
-' ===================== CLASSE CONCRETE TaskListImpl =====================
-
-class TaskListImpl #F7C1C1 {
+class TaskListImpl #B5D4F4 {
+    __Attributs__
     - validator : InputValidator
-    --
+    __Constructeur__
     + TaskListImpl()
-    + add(t : Task) : void
-    + remove(id : UUID) : void
-    + update(t : Task) : void
-    + display() : void
-    + getAll() : void
-    + findById(id : UUID) : Task
-    + search(keyword : String) : void
+    __Methodes__
     + filterByStatus(status : TaskStatus) : void
     + filterByPriority(priority : Priority) : void
     + sortByDueDate() : void
@@ -133,13 +111,13 @@ class TaskListImpl #F7C1C1 {
     + importFromXML(filePath : String) : void
 }
 
-' ===================== CLASSE TaskManagerGUI (View) =====================
-
-class TaskManagerGUI #9FE1CB {
+class TaskManagerGUI #B5D4F4 {
+    __Attributs__
     - mainFrame : JFrame
     - taskTable : JTable
-    --
+    __Constructeur__
     + TaskManagerGUI(taskList : TaskListImpl)
+    __Methodes__
     + refreshView() : void
     + showCreateDialog() : void
     + showEditDialog(t : Task) : void
@@ -149,31 +127,17 @@ class TaskManagerGUI #9FE1CB {
     + showSearchResults(keyword : String) : void
 }
 
-' ===================== RELATIONS =====================
 
-' TaskImpl implémente Task
 Task <|.. TaskImpl
 
-' TaskListImpl hérite de TaskList
 TaskList <|-- TaskListImpl
 
-' TaskImpl utilise TaskStatus et Priority (dépendances)
-TaskImpl ..> TaskStatus : uses
-TaskImpl ..> Priority  : uses
+TaskImpl "1" *-- "0..*" Comment : contains 
 
-' TaskImpl contient des Comment (composition)
-TaskImpl "1" *-- "0..*" Comment : contains >
+TaskList "1" *-- "0..*" Task : manages 
 
-' TaskList agrège des Task (agrégation — remplace tasks: List<Task>)
-TaskList "1" o-- "0..*" Task : manages >
+TaskListImpl ..> InputValidator : uses 
 
-' TaskListImpl agrège des Task (remplace tasks: ArrayList<Task>)
-TaskListImpl "1" o-- "0..*" Task : manages >
-
-' TaskListImpl utilise InputValidator (dépendance)
-TaskListImpl ..> InputValidator : uses >
-
-' TaskManagerGUI délègue à TaskListImpl (dépendance)
-TaskManagerGUI ..> TaskListImpl : delegates >
+TaskManagerGUI ..> TaskListImpl : delegates 
 
 @enduml

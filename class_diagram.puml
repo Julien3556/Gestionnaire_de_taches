@@ -1,4 +1,4 @@
-@startuml ClassDiagram_TaskManager_Partie1
+@startuml ClassDiagram_Partie1
 
 enum TaskStatus <<enumeration>> #C0DD97 {
     PENDING
@@ -14,6 +14,7 @@ enum Priority <<enumeration>> #C0DD97 {
 }
 
 interface Task <<interface>> #CECBF6 {
+    __Methodes__
     + editName(name : String) : void
     + editDescription(desc : String) : void
     + editDueDate(date : Date) : void
@@ -33,14 +34,16 @@ interface Task <<interface>> #CECBF6 {
 }
 
 class TaskImpl #B5D4F4 {
+    __Attributs__
     - id : UUID
     - name : String
     - description : String
     - dueDate : Date
     - status : TaskStatus
     - priority : Priority
-    --
+    __Constructeur__
     + TaskImpl(name : String, description : String, dueDate : Date)
+    __Methodes__
     + editName(name : String) : void
     + editDescription(desc : String) : void
     + editDueDate(date : Date) : void
@@ -59,28 +62,31 @@ class TaskImpl #B5D4F4 {
     + getDueDate() : Date
 }
 
-class Comment #FAC775 {
+class Comment #B5D4F4 {
+    __Attributs__
     - id : UUID
     - content : String
     - createdAt : Date
-    --
+    __Constructeur__
     + Comment(content : String)
+    __Methodes__
     + getContent() : String
     + getCreatedAt() : Date
     + getId() : UUID
 }
 
-class InputValidator #FAC775 {
+class InputValidator #B5D4F4 {
+    __Attributs__
     - {static} MAX_NAME_LEN : int = 100
     - {static} MAX_DESC_LEN : int = 500
-    --
+    __Methodes__
     + validateName(name : String) : String
     + validateDescription(desc : String) : String
     + validateDueDate(date : Date) : Date
 }
 
 abstract class TaskList #F4C0D1 {
-    --
+    __Methodes__
     + {abstract} add(t : Task) : void
     + {abstract} remove(id : UUID) : void
     + {abstract} update(t : Task) : void
@@ -90,10 +96,12 @@ abstract class TaskList #F4C0D1 {
     + {abstract} search(keyword : String) : void
 }
 
-class TaskListImpl #F7C1C1 {
+class TaskListImpl #B5D4F4 {
+    __Attributs__
     - validator : InputValidator
-    --
+    __Constructeur__
     + TaskListImpl()
+    __Methodes__
     + add(t : Task) : void
     + remove(id : UUID) : void
     + update(t : Task) : void
@@ -111,11 +119,13 @@ class TaskListImpl #F7C1C1 {
     + importFromXML(filePath : String) : void
 }
 
-class TaskManagerGUI #9FE1CB {
+class TaskManagerGUI #B5D4F4 {
+    __Attributs__
     - mainFrame : JFrame
     - taskTable : JTable
-    --
+    __Constructeur__
     + TaskManagerGUI(taskList : TaskListImpl)
+    __Methodes__
     + refreshView() : void
     + showCreateDialog() : void
     + showEditDialog(t : Task) : void

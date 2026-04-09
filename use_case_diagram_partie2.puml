@@ -1,35 +1,14 @@
 @startuml DiagrammeCasUtilisationPartie2_Clean
+
 left to right direction
-
-skinparam backgroundColor #FFFFFF
-skinparam ActorBackgroundColor #D6EAF8
-skinparam ActorBorderColor #2471A3
-skinparam ActorFontStyle bold
-skinparam UsecaseBackgroundColor #FDFEFE
-skinparam UsecaseBorderColor #2E86C1
-skinparam UsecaseFontSize 11
-skinparam PackageBorderColor #AEB6BF
-skinparam PackageFontStyle bold
-skinparam PackageFontSize 12
-skinparam ArrowColor #5D6D7E
-skinparam ArrowThickness 1
-skinparam NoteBackgroundColor #FEF9E7
-skinparam NoteBorderColor #F0B27A
 skinparam linetype ortho
-skinparam nodesep 40
-skinparam ranksep 50
 
-' ══════════════════════════════════════════════════════
-'  ACTEURS  — placés sur les bords gauche / droite
-' ══════════════════════════════════════════════════════
+' Acteurs '
 actor "Utilisateur A\n(Authentifié)" as User
 actor "Collaborateur\n(Utilisateur B)"  as UserB
 actor "Système de\nNotification"  as NotifSys
 actor "Administrateur" as Admin
 
-' ══════════════════════════════════════════════════════
-'  SYSTÈME
-' ══════════════════════════════════════════════════════
 rectangle "«système»  Gestionnaire de Tâches Avancé - Partie 2" {
 
     ' ── COLONNE 1 : Auth + CRUD + Statut ──────────────
@@ -66,7 +45,6 @@ rectangle "«système»  Gestionnaire de Tâches Avancé - Partie 2" {
         usecase "Trier par priorité" as UC_SortPriority
     }
 
-    ' ── COLONNE 2 : Recherche + Commentaires + Persistance ──
     package "5. Recherche" #fdfae8{
         usecase "Rechercher par mots-clés" as UC_Search
         usecase "Rechercher par nom" as UC_Search_Name
@@ -91,7 +69,6 @@ rectangle "«système»  Gestionnaire de Tâches Avancé - Partie 2" {
 
     usecase "Valider les entrées" as UC_Validate
 
-    ' ── COLONNE 3 : Collaboration + Stats ──────────────
     package "8. Collaboration & Partage" #FFF3E0 {
         usecase "Partager une liste"               as UC_ShareList
         usecase "Accepter/Refuser invitation"      as UC_AcceptInvite
@@ -118,7 +95,6 @@ rectangle "«système»  Gestionnaire de Tâches Avancé - Partie 2" {
         usecase "Consulter les logs"     as UC_Logs
     }
 
-    ' ── COLONNE 4 : Notifications ──────────────────────
     package "11. Système de Notification" #FDE8E0 {
         usecase "Rappel d'échéance\n(15 min / 1 h / 1 j)"     as UC_ReminderAlert
         usecase "Alerte Overdue\n(CurrentTime > DueDate)"      as UC_OverdueAlert
@@ -130,9 +106,7 @@ rectangle "«système»  Gestionnaire de Tâches Avancé - Partie 2" {
 
 }
 
-' ══════════════════════════════════════════════════════
-'  RELATIONS — Utilisateur principal
-' ══════════════════════════════════════════════════════
+'  relations '
 User -- UC_Register
 User -- UC_Login
 User -- UC_Logout
@@ -173,32 +147,24 @@ User -- UC_NotifPrefs
 User -- UC_ReminderAlert
 User -- UC_OverdueAlert
 
-' ══════════════════════════════════════════════════════
-'  RELATIONS — Collaborateur (Utilisateur B)
-' ══════════════════════════════════════════════════════
+' utilisateur B '
 UserB -- UC_AcceptInvite
 UserB -- UC_EditShared
 UserB -- UC_ViewShared
 UserB -- UC_CollabNotif
 
-' ══════════════════════════════════════════════════════
-'  RELATIONS — Système de Notification
-' ══════════════════════════════════════════════════════
+'  Notification '
 NotifSys -- UC_ReminderAlert
 NotifSys -- UC_OverdueAlert
 NotifSys -- UC_RecurringAlert
 NotifSys -- UC_CollabNotif
 
-' ══════════════════════════════════════════════════════
-'  RELATIONS — Administrateur
-' ══════════════════════════════════════════════════════
+'  Administrateur '
 Admin -- UC_Login
 Admin -- UC_ManageUsers
 Admin -- UC_Logs
 
-' ══════════════════════════════════════════════════════
-'  GÉNÉRALISATIONS (internes aux packages)
-' ══════════════════════════════════════════════════════
+
 UC_Search <|-- UC_Search_Name
 UC_Search <|-- UC_Search_Description
 
@@ -212,9 +178,9 @@ UC_Import <|-- UC_Import_BDD
 
 UC_Dashboard <|-- UC_Stats
 
-' ══════════════════════════════════════════════════════
-'  «include» / «extend»  — limités aux relations locales
-' ══════════════════════════════════════════════════════
+ 
+'  «include» / «extend»  '
+ 
 UC_Create   ..> UC_Validate      : «include»
 UC_Update   ..> UC_Validate      : «include»
 UC_ReadList ..> UC_ReadOne       : «include»

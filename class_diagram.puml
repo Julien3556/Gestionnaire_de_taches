@@ -90,7 +90,6 @@ abstract class TaskList #F4C0D1 {
     + {abstract} add(t : Task) : void
     + {abstract} remove(id : UUID) : void
     + {abstract} update(t : Task) : void
-    + {abstract} display() : void
     + {abstract} getAll() : void
     + {abstract} findById(id : UUID) : Task
     + {abstract} search(keyword : String) : void
@@ -102,13 +101,6 @@ class TaskListImpl #B5D4F4 {
     __Constructeur__
     + TaskListImpl()
     __Methodes__
-    + add(t : Task) : void
-    + remove(id : UUID) : void
-    + update(t : Task) : void
-    + display() : void
-    + getAll() : void
-    + findById(id : UUID) : Task
-    + search(keyword : String) : void
     + filterByStatus(status : TaskStatus) : void
     + filterByPriority(priority : Priority) : void
     + sortByDueDate() : void
@@ -140,14 +132,9 @@ Task <|.. TaskImpl
 
 TaskList <|-- TaskListImpl
 
-TaskImpl ..> TaskStatus : uses
-TaskImpl ..> Priority  : uses
-
 TaskImpl "1" *-- "0..*" Comment : contains 
 
-TaskList "1" o-- "0..*" Task : manages 
-
-TaskListImpl "1" o-- "0..*" Task : manages 
+TaskList "1" *-- "0..*" Task : manages 
 
 TaskListImpl ..> InputValidator : uses 
 

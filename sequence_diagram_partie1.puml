@@ -3,15 +3,6 @@ title Diagramme de Séquence — Partie 1 : Création et Ajout d'une Tâche
 
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
-skinparam backgroundColor #FAFAFA
-skinparam ParticipantBackgroundColor #E8F4FD
-skinparam ParticipantBorderColor #2980B9
-skinparam LifeLineBorderColor #2980B9
-skinparam ArrowColor #2C3E50
-skinparam ActivationBarBorderColor #2980B9
-skinparam ActivationBarBackgroundColor #D6EAF8
-skinparam NoteBackgroundColor #FFFDE7
-skinparam NoteBorderColor #F0C040
 
 actor "Utilisateur" as User
 
@@ -29,9 +20,9 @@ GUI --> User : Affiche le formulaire\n(name, description, dueDate, priority, sta
 
 User -> GUI : Remplit et soumet le formulaire\n(name, description, dueDate, priority)
 note right of User
-  Champs saisis :
+  Exemple de champs saisis :
   • name       : "Préparer rapport"
-  • description: "Rapport MOA S4"
+  • description: "Rapport Microprocessoeurs"
   • dueDate    : 2025-04-01
   • priority   : HIGH
   • status     : IN_PROGRESS (défaut)
@@ -84,14 +75,9 @@ deactivate TASK
 == 4. Ajout de la tâche à la liste ==
 
 TLI -> TLI : taskList.add(taskImpl)
-note right of TLI
-  TaskListImpl maintient une
-  ArrayList<Task> en interne.
-  Méthode abstraite add()
-  définie dans TaskList.
-end note
 
-TLI --> GUI : Succès — tâche ajoutée
+
+TLI --> GUI : Succès — tâche créée et ajoutée
 deactivate TLI
 
 == 5. Mise à jour de l'interface graphique ==

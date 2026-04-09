@@ -1,0 +1,222 @@
+@startuml DiagrammeCasUtilisationPartie2_Clean
+top to bottom direction
+
+skinparam backgroundColor #FFFFFF
+skinparam ActorBackgroundColor #D6EAF8
+skinparam ActorBorderColor #2471A3
+skinparam ActorFontStyle bold
+skinparam UsecaseBackgroundColor #FDFEFE
+skinparam UsecaseBorderColor #2E86C1
+skinparam UsecaseFontSize 11
+skinparam PackageBorderColor #AEB6BF
+skinparam PackageFontStyle bold
+skinparam PackageFontSize 12
+skinparam ArrowColor #5D6D7E
+skinparam ArrowThickness 1
+skinparam NoteBackgroundColor #FEF9E7
+skinparam NoteBorderColor #F0B27A
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 50
+
+' ══════════════════════════════════════════════════════
+'  ACTEURS  — placés sur les bords gauche / droite
+' ══════════════════════════════════════════════════════
+actor "Utilisateur\n(Authentifié)" as User
+actor "Collaborateur\n(Utilisateur B)"  as UserB
+actor "Système de\nNotification"  as NotifSys
+actor "Administrateur" as Admin
+
+' ══════════════════════════════════════════════════════
+'  SYSTÈME
+' ══════════════════════════════════════════════════════
+rectangle "«système»  Gestionnaire de Tâches Avancé" {
+
+    ' ── COLONNE 1 : Auth + CRUD + Statut ──────────────
+    package "0. Authentification" #D6EAF8 {
+        usecase "S'inscrire"       as UC_Register
+        usecase "Se connecter"     as UC_Login
+        usecase "Se déconnecter"   as UC_Logout
+        usecase "Gérer son profil" as UC_Profile
+    }
+
+    package "1. Opérations CRUD" #EBF5FB {
+        usecase "Créer une tâche"              as UC_Create
+        usecase "Voir la liste des tâches"     as UC_ReadList
+        usecase "Voir les détails d'une tâche" as UC_ReadOne
+        usecase "Modifier une tâche"           as UC_Update
+        usecase "Supprimer une tâche"          as UC_Delete
+    }
+
+    package "2. Statut & Priorité" #F5EEF8 {
+        usecase "Marquer 'Completed'"          as UC_Completed
+        usecase "Marquer 'In Progress'"        as UC_InProgress
+        usecase "Marquer 'Abandoned'"          as UC_Abandoned
+        usecase "Marquer 'Pending'"            as UC_Pending
+        usecase "Assigner une priorité\n(Low / Medium / High)" as UC_Priority
+    }
+
+    package "3. Filtrage & Tri" #FEF5FB {
+        usecase "Filtrer par statut"    as UC_FilterStatus
+        usecase "Filtrer par priorité"  as UC_FilterPriority
+        usecase "Trier par échéance"    as UC_SortDate
+        usecase "Trier par priorité"    as UC_SortPriority
+    }
+
+    ' ── COLONNE 2 : Recherche + Commentaires + Persistance ──
+    package "4. Recherche" #FEFDE7 {
+        usecase "Rechercher par mots-clés"   as UC_Search
+        usecase "  → par nom"                as UC_Search_Name
+        usecase "  → par description"        as UC_Search_Description
+    }
+
+    package "5. Commentaires" #F0FDF4 {
+        usecase "Ajouter un commentaire" as UC_Comment
+    }
+
+    package "6. Persistance" #E9F7EF {
+        usecase "Exporter les tâches"  as UC_Export
+        usecase "  → JSON"             as UC_Export_JSON
+        usecase "  → XML"              as UC_Export_XML
+        usecase "  → BDD"              as UC_Export_BDD
+        usecase "Importer les tâches"  as UC_Import
+        usecase "  → JSON"             as UC_Import_JSON
+        usecase "  → XML"              as UC_Import_XML
+        usecase "  → BDD"              as UC_Import_BDD
+    }
+
+    usecase "Valider les entrées" as UC_Validate
+
+    ' ── COLONNE 3 : Collaboration + Stats ──────────────
+    package "7. Collaboration & Partage" #FFF3E0 {
+        usecase "Partager une liste"               as UC_ShareList
+        usecase "Accepter/Refuser invitation"      as UC_AcceptInvite
+        usecase "Modifier une tâche partagée"      as UC_EditShared
+        usecase "Consulter les tâches partagées"   as UC_ViewShared
+        usecase "Révoquer l'accès"                 as UC_RevokeAccess
+    }
+
+    note right of UC_ShareList
+      🔒 Règle de sécurité :
+      Utilisateur A ne peut PAS voir
+      les tâches PRIVÉES
+      de l'Utilisateur B.
+    end note
+
+    package "8. Statistiques & Productivité" #EAF4E8 {
+        usecase "Tableau de bord productivité"      as UC_Dashboard
+        usecase "  → Completed vs In Progress"      as UC_Stats
+        usecase "Exporter rapport d'activité"        as UC_ExportReport
+    }
+
+    package "9. Administration" #F2F3F4 {
+        usecase "Gérer les utilisateurs" as UC_ManageUsers
+        usecase "Consulter les logs"     as UC_Logs
+    }
+
+    ' ── COLONNE 4 : Notifications ──────────────────────
+    package "10. Système de Notification" #FDE8E0 {
+        usecase "Rappel d'échéance\n(15 min / 1 h / 1 j)"     as UC_ReminderAlert
+        usecase "Alerte Overdue\n(CurrentTime > DueDate)"      as UC_OverdueAlert
+        usecase "Rappel tâche récurrente\n(quotidien/hebdo)"   as UC_RecurringAlert
+        usecase "Notification mise à jour\ncollaborative"       as UC_CollabNotif
+        usecase "Définir récurrence"                            as UC_SetRecurrence
+        usecase "Préférences de notification"                   as UC_NotifPrefs
+    }
+
+}
+
+' ══════════════════════════════════════════════════════
+'  RELATIONS — Utilisateur principal
+' ══════════════════════════════════════════════════════
+User -- UC_Register
+User -- UC_Login
+User -- UC_Logout
+User -- UC_Profile
+
+User -- UC_Create
+User -- UC_ReadList
+User -- UC_Update
+User -- UC_Delete
+
+User -- UC_Completed
+User -- UC_InProgress
+User -- UC_Abandoned
+User -- UC_Pending
+User -- UC_Priority
+
+User -- UC_FilterStatus
+User -- UC_FilterPriority
+User -- UC_SortDate
+User -- UC_SortPriority
+
+User -- UC_Search
+User -- UC_Comment
+
+User -- UC_Export
+User -- UC_Import
+
+User -- UC_ShareList
+User -- UC_AcceptInvite
+User -- UC_ViewShared
+User -- UC_RevokeAccess
+
+User -- UC_Dashboard
+User -- UC_ExportReport
+
+User -- UC_SetRecurrence
+User -- UC_NotifPrefs
+User -- UC_ReminderAlert
+User -- UC_OverdueAlert
+
+' ══════════════════════════════════════════════════════
+'  RELATIONS — Collaborateur (Utilisateur B)
+' ══════════════════════════════════════════════════════
+UserB -- UC_AcceptInvite
+UserB -- UC_EditShared
+UserB -- UC_ViewShared
+UserB -- UC_CollabNotif
+
+' ══════════════════════════════════════════════════════
+'  RELATIONS — Système de Notification
+' ══════════════════════════════════════════════════════
+NotifSys -- UC_ReminderAlert
+NotifSys -- UC_OverdueAlert
+NotifSys -- UC_RecurringAlert
+NotifSys -- UC_CollabNotif
+
+' ══════════════════════════════════════════════════════
+'  RELATIONS — Administrateur
+' ══════════════════════════════════════════════════════
+Admin -- UC_Login
+Admin -- UC_ManageUsers
+Admin -- UC_Logs
+
+' ══════════════════════════════════════════════════════
+'  GÉNÉRALISATIONS (internes aux packages)
+' ══════════════════════════════════════════════════════
+UC_Search <|-- UC_Search_Name
+UC_Search <|-- UC_Search_Description
+
+UC_Export <|-- UC_Export_JSON
+UC_Export <|-- UC_Export_XML
+UC_Export <|-- UC_Export_BDD
+
+UC_Import <|-- UC_Import_JSON
+UC_Import <|-- UC_Import_XML
+UC_Import <|-- UC_Import_BDD
+
+UC_Dashboard <|-- UC_Stats
+
+' ══════════════════════════════════════════════════════
+'  «include» / «extend»  — limités aux relations locales
+' ══════════════════════════════════════════════════════
+UC_Create   ..> UC_Validate      : «include»
+UC_Update   ..> UC_Validate      : «include»
+UC_ReadList ..> UC_ReadOne       : «include»
+
+UC_SetRecurrence  ..> UC_RecurringAlert : «include»
+UC_EditShared     ..> UC_CollabNotif    : «include»
+UC_Create         ..> UC_ReminderAlert  : «extend»
+
+@enduml

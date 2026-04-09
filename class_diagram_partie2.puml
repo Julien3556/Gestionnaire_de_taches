@@ -1,0 +1,336 @@
+@startuml ClassDiagram_Partie2
+enum TaskStatus <<enumeration>> #C0DD97 {
+    PENDING
+    IN_PROGRESS
+    COMPLETED
+    ABANDONED
+}
+
+enum Priority <<enumeration>> #C0DD97 {
+    LOW
+    MEDIUM
+    HIGH
+}
+
+enum RecurrenceType <<enumeration>> #C0DD97 {
+    NONE
+    DAILY
+    WEEKLY
+}
+
+enum NotificationType <<enumeration>> #C0DD97 {
+    REMINDER_15MIN
+    REMINDER_1H
+    REMINDER_1DAY
+    OVERDUE
+    RECURRING
+    COLLABORATION_UPDATE
+}
+
+enum SharePermission <<enumeration>> #C0DD97 {
+    READ_ONLY
+    READ_WRITE
+}
+
+class User #B5D4F4 {
+    __Attributs__
+    - id : UUID
+    - username : String
+    - email : String
+    - passwordHash : String
+    - createdAt : Date
+    __Constructeur__
+    + User(username : String, email : String, password : String)
+    __Méthodes__
+    + getId() : UUID
+    + getUsername() : String
+    + getEmail() : String
+    + verifyPassword(raw : String) : boolean
+    + changePassword(newPwd : String) : void
+}
+
+class AuthService #B5D4F4 {
+    __Méthodes__
+    + register(username : String, email : String, password : String) : User
+    + login(email : String, password : String) : Session
+    + logout(session : Session) : void
+    + getCurrentUser(session : Session) : User
+}
+
+class Session #B5D4F4 {
+    __Attributs__
+    - token : String
+    - user : User
+    - expiresAt : Date
+    __Méthodes__
+    + isValid() : boolean
+    + getUser() : User
+}
+
+interface Task <<interface>> #CECBF6 {
+    __Méthodes__
+    + editName(name : String) : void
+    + editDescription(desc : String) : void
+    + editDueDate(date : Date) : void
+    + markCompleted() : void
+    + markInProgress() : void
+    + markAbandoned() : void
+    + markPending() : void
+    + getStatus() : TaskStatus
+    + setPriority(p : Priority) : void
+    + getPriority() : Priority
+    + addComment(content : String, author : User) : void
+    + getComments() : List<Comment>
+    + getId() : UUID
+    + getName() : String
+    + getDescription() : String
+    + getDueDate() : Date
+    + getOwner() : User
+    + isPrivate() : boolean
+}
+
+class TaskImpl #B5D4F4 {
+    __Attributs__
+    - id : UUID
+    - name : String
+    - description : String
+    - dueDate : Date
+    - status : TaskStatus
+    - priority : Priority
+    - owner : User
+    - isPrivate : boolean
+    - recurrence : RecurrenceType
+    - createdAt : Date
+    - updatedAt : Date
+    __Constructeur__
+    + TaskImpl(name : String, desc : String, dueDate : Date, owner : User)
+    __Méthodes__
+    + editName(name : String) : void
+    + editDescription(desc : String) : void
+    + editDueDate(date : Date) : void
+    + markCompleted() : void
+    + markInProgress() : void
+    + markAbandoned() : void
+    + markPending() : void
+    + getStatus() : TaskStatus
+    + setPriority(p : Priority) : void
+    + getPriority() : Priority
+    + setRecurrence(r : RecurrenceType) : void
+    + getRecurrence() : RecurrenceType
+    + addComment(content : String, author : User) : void
+    + getComments() : List<Comment>
+    + getId() : UUID
+    + getName() : String
+    + getDescription() : String
+    + getDueDate() : Date
+    + getOwner() : User
+    + setPrivate(flag : boolean) : void
+    + isPrivate() : boolean
+}
+
+class Comment #B5D4F4 {
+    __Attributs__
+    - id : UUID
+    - content : String
+    - author : User
+    - createdAt : Date
+    __Constructeur__
+    + Comment(content : String, author : User)
+    __Méthodes__
+    + getContent() : String
+    + getAuthor() : User
+    + getCreatedAt() : Date
+    + getId() : UUID
+}
+
+abstract class TaskList #F4C0D1 {
+    __Méthodes__
+    + {abstract} add(t : Task) : void
+    + {abstract} remove(id : UUID) : void
+    + {abstract} update(t : Task) : void
+    + {abstract} getAll() : List<Task>
+    + {abstract} findById(id : UUID) : Task
+    + {abstract} search(keyword : String) : List<Task>
+}
+
+class TaskListImpl #B5D4F4 {
+    __Attributs__
+    - owner : User
+    - name : String
+    - isShared : boolean
+    - validator : InputValidator
+    __Constructeur__
+    + TaskListImpl(name : String, owner : User)
+    __Méthodes__
+    + filterByStatus(status : TaskStatus) : List<Task>
+    + filterByPriority(priority : Priority) : List<Task>
+    + sortByDueDate() : void
+    + sortByPriority() : void
+    + exportToJSON(filePath : String) : void
+    + exportToXML(filePath : String) : void
+    + importFromJSON(filePath : String) : void
+    + importFromXML(filePath : String) : void
+    + getOwner() : User
+    + isShared() : boolean
+}
+
+class ShareInvitation #B5D4F4 {
+    __Attributs__
+    - id : UUID
+    - taskList : TaskListImpl
+    - invitedBy : User
+    - invitedUser : User
+    - permission : SharePermission
+    - status : String
+    - sentAt : Date
+    __Constructeur__
+    + ShareInvitation(list : TaskListImpl, from : User, to : User, perm : SharePermission)
+    __Méthodes__
+    + accept() : void
+    + decline() : void
+    + getStatus() : String
+    + getPermission() : SharePermission
+}
+
+class SharingService #B5D4F4 {
+    __Méthodes__
+    + shareList(list : TaskListImpl, from : User, to : User, perm : SharePermission) : ShareInvitation
+    + revokeAccess(list : TaskListImpl, user : User) : void
+    + canAccess(user : User, task : Task) : boolean
+    + getSharedWithMe(user : User) : List<TaskListImpl>
+    + getCollaborators(list : TaskListImpl) : List<User>
+}
+
+class ProductivityStats #B5D4F4 {
+    __Attributs__
+    - user : User
+    - computedAt : Date
+    __Méthodes__
+    + getTotalTasks() : int
+    + getCompletedCount() : int
+    + getInProgressCount() : int
+    + getAbandonedCount() : int
+    + getPendingCount() : int
+    + getCompletionRate() : double
+    + getOverdueTasks() : List<Task>
+    + getTasksByPriority() : Map<Priority, Integer>
+    + generateReport() : String
+}
+
+class Notification #B5D4F4 {
+    __Attributs__
+    - id : UUID
+    - recipient : User
+    - type : NotificationType
+    - message : String
+    - relatedTask : Task
+    - isRead : boolean
+    - createdAt : Date
+    __Constructeur__
+    + Notification(recipient : User, type : NotificationType, task : Task)
+    __Méthodes__
+    + markAsRead() : void
+    + isRead() : boolean
+    + getMessage() : String
+    + getType() : NotificationType
+}
+
+interface NotificationObserver <<interface>> #CECBF6 {
+    __Méthodes__
+    + onNotify(notification : Notification) : void
+}
+
+class NotificationEngine #B5D4F4 {
+    __Attributs__
+    - observers : List<NotificationObserver>
+    __Méthodes__
+    + subscribe(observer : NotificationObserver) : void
+    + unsubscribe(observer : NotificationObserver) : void
+    + dispatch(notification : Notification) : void
+    + checkOverdue(tasks : List<Task>) : void
+    + checkUpcoming(tasks : List<Task>) : void
+    + checkRecurring(tasks : List<Task>) : void
+}
+
+class NotificationScheduler #B5D4F4 {
+    __Attributs__
+    - engine : NotificationEngine
+    __Méthodes__
+    + scheduleReminder(task : Task, minutesBefore : int) : void
+    + scheduleRecurring(task : Task) : void
+    + cancelScheduled(task : Task) : void
+    + runOverdueCheck() : void
+}
+
+class InputValidator #B5D4F4 {
+    __Attributs__
+    - {static} MAX_NAME_LEN : int = 100
+    - {static} MAX_DESC_LEN : int = 500
+    __Méthodes__
+    + validateName(name : String) : String
+    + validateDescription(desc : String) : String
+    + validateDueDate(date : Date) : Date
+    + validateEmail(email : String) : String
+    + validatePassword(pwd : String) : String
+}
+
+class TaskManagerGUI #B5D4F4 {
+    __Attributs__
+    - currentSession : Session
+    - mainFrame : JFrame
+    - taskTable : JTable
+    __Constructeur__
+    + TaskManagerGUI(session : Session, taskList : TaskListImpl)
+    __Méthodes__
+    + refreshView() : void
+    + showCreateDialog() : void
+    + showEditDialog(t : Task) : void
+    + showDeleteConfirm(id : UUID) : void
+    + applyFilter(status : TaskStatus) : void
+    + applySort(criterion : String) : void
+    + showSearchResults(keyword : String) : void
+    + showDashboard(stats : ProductivityStats) : void
+    + showNotifications(notifs : List<Notification>) : void
+    + showShareDialog(list : TaskListImpl) : void
+}
+
+Task          <|..  TaskImpl
+TaskList      <|--  TaskListImpl
+NotificationObserver <|.. TaskManagerGUI
+
+
+TaskImpl      "1"  *--  "0..*" Comment        : contains 
+TaskList      "1"  o--  "0..*" Task            : manages 
+
+
+TaskImpl      "0..*" --  "1"  User             : owned by 
+Comment             --  "1"  User              : written by 
+TaskListImpl  "0..*" --  "1"  User             : owned by 
+
+Session             --  "1"  User              : authenticates 
+AuthService         ..>       Session           : creates 
+AuthService         ..>       User              : manages 
+
+ShareInvitation     --  "1"  TaskListImpl       : targets 
+ShareInvitation     --  "2"  User               : involves 
+SharingService      ..>       ShareInvitation    : creates 
+SharingService      ..>       TaskListImpl       : controls 
+
+Notification        --  "1"  User               : sent to 
+Notification        --  "0..1" Task             : about 
+NotificationEngine  "1" *--  "0..*" NotificationObserver : notifies 
+NotificationEngine  ..>       Notification       : dispatches 
+NotificationScheduler ..>     NotificationEngine : uses 
+NotificationScheduler ..>     Task               : monitors 
+
+ProductivityStats   --  "1"  User               : belongs to 
+ProductivityStats   ..>       TaskListImpl       : reads 
+
+TaskListImpl        ..>       InputValidator     : uses 
+TaskManagerGUI      ..>       TaskListImpl       : delegates 
+TaskManagerGUI      ..>       SharingService     : uses 
+TaskManagerGUI      ..>       ProductivityStats  : displays 
+TaskManagerGUI      --  "1"  Session            : holds 
+
+
+@enduml

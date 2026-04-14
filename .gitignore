@@ -1,0 +1,24 @@
+# Java
+*.class
+*.jar
+
+# Fichiers de logs
+*.log
+
+# IDEs - Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+
+# IDEs - VS Code
+.vscode/
+
+# Variables d'environnement
+.env
+.env.local
+.env.*.local

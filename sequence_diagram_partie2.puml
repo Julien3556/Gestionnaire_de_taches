@@ -71,19 +71,7 @@ end
 TLI -> VAL : validateDescription(description)
 activate VAL
 
-alt Champ description vide ou null
-    VAL --> TLI : ValidationException("La description ne peut pas être vide")
-    TLI --> GUI : Erreur de validation
-    GUI --> User : Affiche message d'erreur\n"Description obligatoire"
-else description valide
-    VAL --> TLI : description validée
-    deactivate VAL
-end
-
-TLI -> VAL : validateDueDate(dueDate)
-activate VAL
-
-alt Date invalide ou passée
+alt Date invalide
     VAL --> TLI : ValidationException("Date d'échéance invalide")
     TLI --> GUI : Erreur de validation
     GUI --> User : Affiche message d'erreur\n"Date invalide"

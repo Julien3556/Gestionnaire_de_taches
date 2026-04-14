@@ -40,10 +40,10 @@ alt Champ name vide ou null
     VAL --> TLI : ValidationException("Le nom ne peut pas être vide")
     TLI --> GUI : Erreur de validation
     GUI --> User : Affiche message d'erreur\n"Le nom est obligatoire"
-else Champ description vide ou null
-    VAL --> TLI : ValidationException("La description ne peut pas être vide")
+else date invalide
+    VAL --> TLI : ValidationException("Date d'échéance invalide")
     TLI --> GUI : Erreur de validation
-    GUI --> User : Affiche message d'erreur\n"Description obligatoire"
+    GUI --> User : Affiche message d'erreur\n"Date invalide"
 else Toutes les entrées sont valides
     VAL --> TLI : true (validation OK)
     deactivate VAL

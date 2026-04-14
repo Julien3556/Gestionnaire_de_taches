@@ -57,13 +57,9 @@ rectangle "«système»  Gestionnaire de Tâches Avancé - Partie 2" {
     package "7. Persistance" #e8fdf1{
         usecase "Exporter les tâches" as UC_Export
         usecase "Exporter les tâches en JSON" as UC_Export_JSON
-        usecase "Exporter les tâches en XML" as UC_Export_XML
-        usecase "Exporter les tâches vers BDD" as UC_Export_BDD
 
         usecase "Importer les tâches" as UC_Import
         usecase "Importer les tâches en JSON" as UC_Import_JSON
-        usecase "Importer les tâches en XML" as UC_Import_XML
-        usecase "Importer les tâches vers BDD" as UC_Import_BDD
     }
 
     usecase "Valider les entrées" as UC_Validate
@@ -168,12 +164,8 @@ UC_Search <|-- UC_Search_Name
 UC_Search <|-- UC_Search_Description
 
 UC_Export <|-- UC_Export_JSON
-UC_Export <|-- UC_Export_XML
-UC_Export <|-- UC_Export_BDD
 
 UC_Import <|-- UC_Import_JSON
-UC_Import <|-- UC_Import_XML
-UC_Import <|-- UC_Import_BDD
 
 UC_Dashboard <|-- UC_Stats
 

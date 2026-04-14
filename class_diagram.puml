@@ -106,9 +106,7 @@ class TaskListImpl #B5D4F4 {
     + sortByDueDate() : void
     + sortByPriority() : void
     + exportToJSON(filePath : String) : void
-    + exportToXML(filePath : String) : void
     + importFromJSON(filePath : String) : void
-    + importFromXML(filePath : String) : void
 }
 
 class TaskManagerGUI #B5D4F4 {

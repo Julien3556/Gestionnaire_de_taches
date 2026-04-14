@@ -25,7 +25,7 @@ note right of User
   • description: "Rapport Microprocessoeurs"
   • dueDate    : 2025-04-01
   • priority   : HIGH
-  • status     : IN_PROGRESS (défaut)
+  • status     : PENDING (défaut)
 end note
 
 == 2. Validation des entrées (avant création) ==
@@ -40,10 +40,6 @@ alt Champ name vide ou null
     VAL --> TLI : ValidationException("Le nom ne peut pas être vide")
     TLI --> GUI : Erreur de validation
     GUI --> User : Affiche message d'erreur\n"Le nom est obligatoire"
-else Champ name trop long (> 100 car.)
-    VAL --> TLI : ValidationException("Nom trop long (max 100 caractères)")
-    TLI --> GUI : Erreur de validation
-    GUI --> User : Affiche message d'erreur\n"Nom trop long"
 else Champ description vide ou null
     VAL --> TLI : ValidationException("La description ne peut pas être vide")
     TLI --> GUI : Erreur de validation

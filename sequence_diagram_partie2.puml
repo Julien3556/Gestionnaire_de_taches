@@ -63,10 +63,6 @@ alt Champ name vide ou null
     VAL --> TLI : ValidationException("Le nom ne peut pas être vide")
     TLI --> GUI : Erreur de validation
     GUI --> User : Affiche message d'erreur\n"Le nom est obligatoire"
-else Champ name trop long (> 100 car.)
-    VAL --> TLI : ValidationException("Nom trop long (max 100 caractères)")
-    TLI --> GUI : Erreur de validation
-    GUI --> User : Affiche message d'erreur\n"Nom trop long"
 else name valide
     VAL --> TLI : name validé
     deactivate VAL
@@ -79,10 +75,6 @@ alt Champ description vide ou null
     VAL --> TLI : ValidationException("La description ne peut pas être vide")
     TLI --> GUI : Erreur de validation
     GUI --> User : Affiche message d'erreur\n"Description obligatoire"
-else description trop longue (> 500 car.)
-    VAL --> TLI : ValidationException("Description trop longue (max 500 caractères)")
-    TLI --> GUI : Erreur de validation
-    GUI --> User : Affiche message d'erreur\n"Description trop longue"
 else description valide
     VAL --> TLI : description validée
     deactivate VAL

@@ -1,0 +1,8 @@
+enum NotificationType {
+    REMINDER_15MIN,
+    REMINDER_1H,
+    REMINDER_1DAY,
+    OVERDUE,
+    RECURRING,
+    COLLABORATION_UPDATE
+}

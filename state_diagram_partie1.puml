@@ -1,4 +1,4 @@
-@startuml DiagrammeEtatTransitionPartie1
+@startuml DiagrammeEtatTransition_Partie1
 
 [*] --> Validation : soumission du formulaire\n(name, description, dueDate, priority)
 

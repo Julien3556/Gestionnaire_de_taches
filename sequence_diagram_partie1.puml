@@ -1,4 +1,4 @@
-@startuml DiagrammeSequencePartie1
+@startuml DiagrammeSequence_Partie1
 title Diagramme de Séquence — Partie 1 : Création et Ajout d'une Tâche
 
 skinparam sequenceMessageAlign center
@@ -56,17 +56,14 @@ end
 
 == 3. Création de l'objet TaskImpl ==
 
-TLI -> TASK : new TaskImpl(name, description, dueDate, priority)
+TLI -> TASK : new TaskImpl(name, description, dueDate)
 activate TASK
 
-TASK -> TASK : setName(name)
-TASK -> TASK : setDescription(description)
-TASK -> TASK : setDueDate(dueDate)
-TASK -> TASK : setPriority(priority)
-TASK -> TASK : setStatus(IN_PROGRESS)
+TASK -> TASK : setPriority(LOW)
+TASK -> TASK : setStatus(PENDING)
 note right of TASK
-  Status par défaut = IN_PROGRESS
-  (implémentation de l'interface Task)
+  Priority par défaut = LOW
+  Status par défaut = PENDING
 end note
 
 TASK --> TLI : taskImpl (objet créé)

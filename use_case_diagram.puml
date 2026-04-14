@@ -1,4 +1,4 @@
-@startuml DiagrammeCasUtilisation
+@startuml DiagrammeCasUtilisation_Partie1
 left to right direction
 ' Acteurs '
 actor "Utilisateur" as User

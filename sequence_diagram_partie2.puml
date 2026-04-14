@@ -1,0 +1,173 @@
+@startuml DiagrammeSequence_Partie2
+title Diagramme de Séquence — Partie 2 : Création et Ajout d'une Tâche
+
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor "Utilisateur" as User
+
+participant "TaskManagerGUI\n(View + NotificationObserver)" as GUI
+participant "AuthService\n(Authentification)" as AUTH
+participant "Session\n(Sécurité)" as SESSION
+participant "TaskListImpl\n(Controller / Model)" as TLI
+participant "InputValidator\n(Validation)" as VAL
+participant "TaskImpl\n(Model)" as TASK
+participant "NotificationScheduler\n(Planification)" as SCHED
+participant "NotificationEngine\n(Dispatch)" as ENGINE
+
+== 0. Vérification de la session ==
+
+User -> GUI : Ouvre le formulaire de création
+activate GUI
+
+GUI -> SESSION : isValid()
+activate SESSION
+SESSION --> GUI : true
+deactivate SESSION
+
+note over GUI
+  L'utilisateur est authentifié
+  (Session active avec token valide)
+end note
+
+GUI -> AUTH : getCurrentUser(session)
+activate AUTH
+AUTH --> GUI : user (User courant)
+deactivate AUTH
+
+GUI --> User : Affiche le formulaire\n(name, description, dueDate, priority,\nrecurrence, isPrivate)
+
+== 1. Saisie des données par l'utilisateur ==
+
+User -> GUI : Remplit et soumet le formulaire
+note right of User
+  Exemple de champs saisis :
+  • name        : "Préparer rapport"
+  • description : "Rapport Microprocesseurs"
+  • dueDate     : 2025-04-01
+  • priority    : HIGH
+  • recurrence  : WEEKLY
+  • isPrivate   : false
+  • status      : PENDING (défaut)
+end note
+
+== 2. Validation des entrées (InputValidator) ==
+
+GUI -> TLI : addTask(name, description, dueDate, priority, recurrence, isPrivate, user)
+activate TLI
+
+TLI -> VAL : validateName(name)
+activate VAL
+
+alt Champ name vide ou null
+    VAL --> TLI : ValidationException("Le nom ne peut pas être vide")
+    TLI --> GUI : Erreur de validation
+    GUI --> User : Affiche message d'erreur\n"Le nom est obligatoire"
+else Champ name trop long (> 100 car.)
+    VAL --> TLI : ValidationException("Nom trop long (max 100 caractères)")
+    TLI --> GUI : Erreur de validation
+    GUI --> User : Affiche message d'erreur\n"Nom trop long"
+else name valide
+    VAL --> TLI : name validé
+    deactivate VAL
+end
+
+TLI -> VAL : validateDescription(description)
+activate VAL
+
+alt Champ description vide ou null
+    VAL --> TLI : ValidationException("La description ne peut pas être vide")
+    TLI --> GUI : Erreur de validation
+    GUI --> User : Affiche message d'erreur\n"Description obligatoire"
+else description trop longue (> 500 car.)
+    VAL --> TLI : ValidationException("Description trop longue (max 500 caractères)")
+    TLI --> GUI : Erreur de validation
+    GUI --> User : Affiche message d'erreur\n"Description trop longue"
+else description valide
+    VAL --> TLI : description validée
+    deactivate VAL
+end
+
+TLI -> VAL : validateDueDate(dueDate)
+activate VAL
+
+alt Date invalide ou passée
+    VAL --> TLI : ValidationException("Date d'échéance invalide")
+    TLI --> GUI : Erreur de validation
+    GUI --> User : Affiche message d'erreur\n"Date invalide"
+else date valide
+    VAL --> TLI : date validée
+    deactivate VAL
+    note over TLI : Toutes les entrées sont valides,\non procède à la création
+end
+
+== 3. Création de l'objet TaskImpl ==
+
+TLI -> TASK : new TaskImpl(name, description, dueDate, owner)
+activate TASK
+
+TASK -> TASK : setPriority(priority)
+TASK -> TASK : setStatus(PENDING)
+TASK -> TASK : setRecurrence(recurrence)
+TASK -> TASK : setPrivate(isPrivate)
+TASK -> TASK : setCreatedAt(now)
+TASK -> TASK : setUpdatedAt(now)
+
+note right of TASK
+  Ajout de la Partie 2 :
+  • owner      : User courant
+  • recurrence : WEEKLY
+  • isPrivate  : false
+  • createdAt / updatedAt auto-générés
+  • Status par défaut = PENDING
+end note
+
+TASK --> TLI : taskImpl (objet créé)
+deactivate TASK
+
+== 4. Ajout de la tâche à la liste ==
+
+TLI -> TLI : taskList.add(taskImpl)
+
+TLI --> GUI : Succès — tâche créée et ajoutée
+deactivate TLI
+
+== 5. Planification des notifications ==
+
+GUI -> SCHED : scheduleReminder(taskImpl, 1440)
+activate SCHED
+note right of SCHED
+    Planifie une notification de rappel
+    1440 min = 1 jour avant l'échéance
+    (REMINDER_1DAY)
+end note
+
+SCHED -> ENGINE : dispatch(Notification(user, REMINDER_1DAY, taskImpl))
+activate ENGINE
+ENGINE -> GUI : onNotify(notification)
+
+ENGINE --> SCHED : dispatched
+deactivate ENGINE
+
+alt recurrence != NONE
+    SCHED -> SCHED : scheduleRecurring(taskImpl)
+    note right of SCHED
+      Planifie une notification
+      de type RECURRING (ex : WEEKLY)
+    end note
+end
+
+SCHED --> GUI : reminder planifié
+deactivate SCHED
+
+== 6. Mise à jour de l'interface graphique ==
+
+GUI -> TLI : getAll()
+activate TLI
+TLI --> GUI : Liste mise à jour [Task, ...]
+deactivate TLI
+
+GUI --> User : Affiche la liste des tâches\n(avec la nouvelle tâche visible)
+deactivate GUI
+
+@enduml

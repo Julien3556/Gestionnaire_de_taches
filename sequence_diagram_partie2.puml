@@ -44,7 +44,7 @@ note right of User
   Exemple de champs saisis :
   • name        : "Préparer rapport"
   • description : "Rapport Microprocesseurs"
-  • dueDate     : 2025-04-01
+  • dueDate     : 01/04/2026
   • priority    : HIGH
   • recurrence  : WEEKLY
   • isPrivate   : false
@@ -62,7 +62,7 @@ activate VAL
 alt Champ name vide ou null
     VAL --> TLI : ValidationException("Le nom ne peut pas être vide")
     TLI --> GUI : Erreur de validation
-    GUI --> User : Affiche message d'erreur\n"Le nom est obligatoire"
+    GUI --> User : Affiche message d'erreur\n"Le nom ne peut pas être vide"
 else name valide
     VAL --> TLI : name validé
     deactivate VAL
@@ -74,7 +74,7 @@ activate VAL
 alt Date invalide
     VAL --> TLI : ValidationException("Date d'échéance invalide")
     TLI --> GUI : Erreur de validation
-    GUI --> User : Affiche message d'erreur\n"Date invalide"
+    GUI --> User : Affiche message d'erreur\n"Format de date invalide (attendu : dd/MM/yyyy)."
 else date valide
     VAL --> TLI : date validée
     deactivate VAL

@@ -251,8 +251,6 @@ class NotificationEngine #B5D4F4 {
 }
 
 class NotificationScheduler #B5D4F4 {
-    __Attributs__
-    - engine : NotificationEngine
     __Méthodes__
     + scheduleReminder(task : Task, minutesBefore : int) : void
     + scheduleRecurring(task : Task) : void
@@ -272,13 +270,38 @@ class InputValidator #B5D4F4 {
     + validatePassword(pwd : String) : String
 }
 
+class TaskManagerFacade #FFE4B5 {
+    __Attributs__
+    - authService : AuthService
+    - taskList : TaskListImpl
+    - sharingService : SharingService
+    - notificationEngine : NotificationEngine
+    - notificationScheduler : NotificationScheduler
+    - stats : ProductivityStats
+    __Constructeur__
+    + TaskManagerFacade()
+    __Méthodes__
+    + register(username : String, email : String, password : String) : User
+    + login(email : String, password : String) : Session
+    + logout(session : Session) : void
+    + createTask(name : String, desc : String, dueDate : Date, session : Session) : Task
+    + editTask(id : UUID, name : String, desc : String, dueDate : Date, session : Session) : void
+    + deleteTask(id : UUID, session : Session) : void
+    + getTaskList(session : Session) : List<Task>
+    + searchTasks(keyword : String, session : Session) : List<Task>
+    + shareList(list : TaskListImpl, to : User, perm : SharePermission, session : Session) : ShareInvitation
+    + revokeAccess(list : TaskListImpl, user : User, session : Session) : void
+    + getStats(session : Session) : ProductivityStats
+    + getNotifications(session : Session) : List<Notification>
+}
+
 class TaskManagerGUI #B5D4F4 {
     __Attributs__
     - currentSession : Session
     - mainFrame : JFrame
     - taskTable : JTable
     __Constructeur__
-    + TaskManagerGUI(session : Session, taskList : TaskListImpl)
+    + TaskManagerGUI(session : Session, facade : TaskManagerFacade)
     __Méthodes__
     + refreshView() : void
     + showCreateDialog() : void
@@ -317,18 +340,23 @@ SharingService      ..>       TaskListImpl       : controls
 Notification        --  "1"  User               : sent to 
 Notification        --  "0..1" Task             : about 
 NotificationEngine  "1" *--  "0..*" NotificationObserver : notifies 
-NotificationEngine  ..>       Notification       : dispatches 
-NotificationScheduler ..>     NotificationEngine : uses 
+NotificationEngine  -->  "1"    Notification       : dispatches 
+NotificationScheduler -->  "*"   NotificationEngine : uses 
 NotificationScheduler ..>     Task               : monitors 
 
 ProductivityStats   --  "1"  User               : belongs to 
 ProductivityStats   ..>       TaskListImpl       : reads 
 
 TaskListImpl        ..>       InputValidator     : uses 
-TaskManagerGUI      ..>       TaskListImpl       : delegates 
-TaskManagerGUI      ..>       SharingService     : uses 
-TaskManagerGUI      ..>       ProductivityStats  : displays 
-TaskManagerGUI      --  "1"  Session            : holds 
+
+TaskManagerFacade   ..>       AuthService        : uses
+TaskManagerFacade   ..>       TaskListImpl       : uses
+TaskManagerFacade   ..>       SharingService     : uses
+TaskManagerFacade   ..>       NotificationEngine : uses
+TaskManagerFacade   ..>       NotificationScheduler : uses
+TaskManagerFacade   ..>       ProductivityStats  : uses
+
+TaskManagerGUI      ..>       TaskManagerFacade  : delegates
 
 
 @enduml
